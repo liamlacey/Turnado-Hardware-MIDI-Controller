@@ -15,15 +15,17 @@ const int BCKGND_COLOUR = ILI9341_BLACK;
 const int SLIDER_COLOUR = ILI9341_RED;
 const int SLIDER_BCKGND_COLOUR = ILI9341_DARKGREY;
 
+const int SLIDER_WIDTH = 20;
+const int SLIDER_MAX_SIZE = 127;
+
 void setup()
 {
   tft.begin();
   tft.setRotation (3);
   tft.fillScreen (BCKGND_COLOUR);
-  
-  tft.fillRect (0, 0, 127 * 2, 20, SLIDER_BCKGND_COLOUR);
-  
-  //tft.fillCircle (50, 50, 20, SLIDER_COLOUR);
+
+  //draw a vertical rectangle 'slider' at the bottom of the screen
+  tft.fillRect (0, tft.height() - SLIDER_MAX_SIZE, SLIDER_WIDTH, SLIDER_MAX_SIZE, SLIDER_BCKGND_COLOUR);
 
   usbMIDI.setHandleControlChange(ProcessMidiControlChange);
 
@@ -43,11 +45,13 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
   {
     if (midiCcValue > prevMidiCcValue)
     {
-      tft.fillRect (prevMidiCcValue * 2, 0, (midiCcValue - prevMidiCcValue) * 2, 20, SLIDER_COLOUR);
+      //increase the size of the slider by drawing the value difference on the top
+      tft.fillRect (0, tft.height() - midiCcValue, SLIDER_WIDTH, midiCcValue - prevMidiCcValue, SLIDER_COLOUR);
     }
     else
     {
-      tft.fillRect (midiCcValue * 2, 0, (prevMidiCcValue - midiCcValue) * 2, 20, SLIDER_BCKGND_COLOUR);
+      //decrease the size of the slider by 'clearing' the value difference from the top
+      tft.fillRect (0, tft.height() - prevMidiCcValue, SLIDER_WIDTH, prevMidiCcValue - midiCcValue, SLIDER_BCKGND_COLOUR);
     }
 
     prevMidiCcValue = midiCcValue;
