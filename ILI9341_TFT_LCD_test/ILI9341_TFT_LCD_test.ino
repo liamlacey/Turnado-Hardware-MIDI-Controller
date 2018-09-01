@@ -8,6 +8,9 @@ const uint8_t TFT_CS = 10;
 // Use hardware SPI (#13, #12, #11) and the above for CS/DC
 ILI9341_t3 tft = ILI9341_t3 (TFT_CS, TFT_DC);
 
+const int LCD_FRAME_RATE = 30;
+long previousMillis = 0;
+
 const int BCKGND_COLOUR = ILI9341_BLACK;
 const int SLIDER_COLOUR = ILI9341_RED;
 const int SLIDER_BCKGND_COLOUR = ILI9341_DARKGREY;
@@ -19,8 +22,11 @@ const int SLIDER_SPACING = 40;
 const uint8_t NUM_OF_SLIDERS = 8;
 const uint8_t SLIDER_CC_NUMS[NUM_OF_SLIDERS] =  {2, 3, 4, 5, 6, 8, 9, 12};
 
-int midiCcValue[NUM_OF_SLIDERS] = {0};
-int prevMidiCcValue[NUM_OF_SLIDERS] = {0};
+int sliderValue[NUM_OF_SLIDERS] = {0};
+int prevSliderValue[NUM_OF_SLIDERS] = {0};
+
+uint8_t midiCcValue[NUM_OF_SLIDERS] = {0};
+uint8_t prevMidiCcValue[NUM_OF_SLIDERS] = {0};
 
 void setup()
 {
@@ -40,6 +46,13 @@ void loop()
 {
   //Read from USB MIDI-in
   usbMIDI.read();
+
+  //update the LCD display at the set frame rate
+  if ((millis() - previousMillis) > (1000.0 / (float)LCD_FRAME_RATE))
+  {
+    updateDisplay();
+    previousMillis = millis();
+  }
 }
 
 void ProcessMidiControlChange (byte channel, byte control, byte value)
@@ -52,25 +65,42 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
 
       if (midiCcValue[i] != prevMidiCcValue[i])
       {
-        if (midiCcValue[i] > prevMidiCcValue[i])
-        {
-          //increase the size of the slider by drawing the value difference on the top
-          tft.fillRect (i * SLIDER_SPACING, tft.height() - midiCcValue[i], SLIDER_WIDTH, midiCcValue[i] - prevMidiCcValue[i], SLIDER_COLOUR);
-        }
-        else
-        {
-          //decrease the size of the slider by 'clearing' the value difference from the top
-          tft.fillRect (i * SLIDER_SPACING, tft.height() - prevMidiCcValue[i], SLIDER_WIDTH, prevMidiCcValue[i] - midiCcValue[i], SLIDER_BCKGND_COLOUR);
-        }
+        //set the new value for the slider
+        sliderValue[i] = midiCcValue[i];
 
         prevMidiCcValue[i] = midiCcValue[i];
-        
+
       } //if (midiCcValue[i] != prevMidiCcValue[i])
 
     } //if (control == SLIDER_CC_NUMS[i])
 
   } //for (uint8_t i = 0; i < NUM_OF_SLIDERS; i++)
 
+}
+
+void updateDisplay()
+{
+  for (uint8_t i = 0; i < NUM_OF_SLIDERS; i++)
+  {
+    //if the slider value needs updating
+    if (sliderValue[i] != prevSliderValue[i])
+    {
+      if (sliderValue[i] > prevSliderValue[i])
+      {
+        //increase the size of the slider by drawing the value difference on the top
+        tft.fillRect (i * SLIDER_SPACING, tft.height() - sliderValue[i], SLIDER_WIDTH, sliderValue[i] - prevSliderValue[i], SLIDER_COLOUR);
+      }
+      else
+      {
+        //decrease the size of the slider by 'clearing' the value difference from the top
+        tft.fillRect (i * SLIDER_SPACING, tft.height() - prevSliderValue[i], SLIDER_WIDTH, prevSliderValue[i] - sliderValue[i], SLIDER_BCKGND_COLOUR);
+      }
+
+      prevSliderValue[i] = sliderValue[i];
+
+    } //if (sliderValue[i] != prevSliderValue[i])
+
+  } //for (uint8_t i = 0; i < NUM_OF_SLIDERS; i++)
 
 }
 
