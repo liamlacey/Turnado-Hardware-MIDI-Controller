@@ -1,6 +1,6 @@
-#include "EncoderSwitched.h"
+#include "RotaryEncoder.h"
 
-EncoderSwitched::EncoderSwitched (uint8_t encPin1, uint8_t encPin2, uint8_t switchPin)
+RotaryEncoder::RotaryEncoder (uint8_t encPin1, uint8_t encPin2, uint8_t switchPin)
 {
   encoder = new Encoder (encPin1, encPin2);
 
@@ -8,13 +8,13 @@ EncoderSwitched::EncoderSwitched (uint8_t encPin1, uint8_t encPin2, uint8_t swit
   pinMode (switchPin, INPUT_PULLUP);
 }
 
-EncoderSwitched::~EncoderSwitched()
+RotaryEncoder::~RotaryEncoder()
 {
   delete encoder;
   delete switchDebouncer;
 }
 
-void EncoderSwitched::update()
+void RotaryEncoder::update()
 {
   //Check for encoder turn
   //TODO: implement encoder acceleration
@@ -43,22 +43,22 @@ void EncoderSwitched::update()
   }
 }
 
-uint8_t EncoderSwitched::getSwitchState()
+uint8_t RotaryEncoder::getSwitchState()
 {
   return switchState;
 }
 
-void EncoderSwitched::onEncoderChange( void (*function)(EncoderSwitched&, int) )
+void RotaryEncoder::onEncoderChange( void (*function)(RotaryEncoder&, int) )
 {
   this->handle_encoder_change = function;
 }
 
-void EncoderSwitched::onSwitchChange( void (*function)(EncoderSwitched&, uint8_t) )
+void RotaryEncoder::onSwitchChange( void (*function)(RotaryEncoder&, uint8_t) )
 {
   this->handle_switch_change = function;
 }
 
-bool EncoderSwitched::operator==(EncoderSwitched& b)
+bool RotaryEncoder::operator==(RotaryEncoder& b)
 {
   return (this == &b);
 }

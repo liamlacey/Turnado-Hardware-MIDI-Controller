@@ -1,8 +1,8 @@
-#include "EncoderSwitched.h"
+#include "RotaryEncoder.h"
 #include "SwitchControl.h"
 
-EncoderSwitched encoder (5, 6, 4);
-EncoderSwitched encoder2 (0, 1, 2);
+RotaryEncoder encoder (5, 6, 4);
+RotaryEncoder encoder2 (0, 1, 2);
 
 SwitchControl pushButton (3);
 
@@ -23,7 +23,7 @@ void loop()
 
 }
 
-void processEncoderChange (EncoderSwitched &enc, int enc_value)
+void processEncoderChange (RotaryEncoder &enc, int enc_value)
 {
   if (enc == encoder)
   {
@@ -37,7 +37,7 @@ void processEncoderChange (EncoderSwitched &enc, int enc_value)
   }
 }
 
-void processEncoderSwitchChange (EncoderSwitched &enc, uint8_t switch_state)
+void processEncoderSwitchChange (RotaryEncoder &enc, uint8_t switch_state)
 {
   if (enc == encoder)
   {
