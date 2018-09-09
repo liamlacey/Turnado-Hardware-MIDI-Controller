@@ -47,10 +47,10 @@ class ThumbJoystick
     const int JS_Y_HYSTERESIS_VAL = 3;
     //Joystick centre plateau value.
     //Increase to add more dead space around the centre if joystick isn't centring.
-    const int JS_CENTRE_PLATEAU_VAL = 50;
+    const int JS_CENTRE_PLATEAU_VAL = 10;
     //Joystick edge plateau value.
     //Increase to add more dead space at the edge if joystick isn't reaching end values.
-    const int JS_EDGE_PLATEAU_VAL = 4;
+    const int JS_EDGE_PLATEAU_VAL = 0;
 
     uint8_t yAxisPin;
     uint16_t yAxisRawValue = 511;
