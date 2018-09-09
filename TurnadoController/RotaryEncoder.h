@@ -14,6 +14,12 @@
 
 /**
     A Teensy/Arduino class for processing standard switched rotary encoders.
+    Features:
+    - Processes encoder turns and push switch state changes
+    - Provides encoder values as stateless values - +1 for clockwise or -1 for anticlockwise
+    - Callback functions for all value changes
+    - Switch debouncer
+    - Coming soon - encoder acceleration
 
     To use, simply created instances of the class in your Teensy sketch, assign callback functions
     to the on...() functions, and call the update() function within your loop() function.

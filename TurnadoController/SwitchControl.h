@@ -13,6 +13,10 @@
 
 /**
     A Teensy/Arduino class for processing standard binary switches/buttons.
+    Features:
+    - Provides switch values as 0 (off) or 1 (on)
+    - Callback function for all value changes
+    - Debouncer
 
     To use, simply created instances of the class in your Teensy sketch, assign a callback function
     to the on...() function, and call the update() function within your loop() function.

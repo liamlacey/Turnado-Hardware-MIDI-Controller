@@ -13,6 +13,12 @@
 /**
     A Teensy/Arduino class for processing thumb joystick.
     Currently only supports 1 axis and no switch.
+    Feature:
+    - Provides joystick value as a bipolar 8-bit value - 0 to -127 for down and 0 to 127 for up.
+    - Callback functions for all value changes
+    - Hysteresis to create stable value changes
+    - Central plateau so that joystick always centres properly
+    - End plateau's so that joystick always reaches the min and max values
 
     To use, simply created instances of the class in your Teensy sketch, assign a callback function
     to the on...() function, and call the update() function within your loop() function.
