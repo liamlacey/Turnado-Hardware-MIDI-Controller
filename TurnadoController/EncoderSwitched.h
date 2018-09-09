@@ -8,6 +8,7 @@
 #ifndef EncoderSwitched_h
 #define EncoderSwitched_h
 
+#include "Arduino.h"
 #include <Encoder.h>
 #include <Bounce.h>
 
@@ -31,7 +32,7 @@ class EncoderSwitched
     EncoderSwitched (uint8_t encPin1, uint8_t encPin2, uint8_t switchPin);
     ~EncoderSwitched();
 
-    /** Reads and update all control values.
+    /** Reads and updates all control values.
 
         You must call this function from the loop() function in your sketch.
     */
@@ -47,15 +48,15 @@ class EncoderSwitched
     /** Assigns the function you want to be called when the switch is pressed/released.
 
         @param enc - The instance of this class that has detected a change
-        @param enc_value - The new switch value, where 1 = pressed and 0 = released
+        @param switch_value - The new switch value, where 1 = pressed and 0 = released
     */
     void onSwitchChange( void (*)(EncoderSwitched &enc, uint8_t switch_value) );
 
-    /** Returns the current state of the swith (0-1)
+    /** Returns the current state of the switch (0-1)
     */
     uint8_t getSwitchState();
 
-    /** Compares the memory address of instances of the class
+    /** Compares the memory addresses of instances of the class
     */
     bool operator==(EncoderSwitched& b);
 
