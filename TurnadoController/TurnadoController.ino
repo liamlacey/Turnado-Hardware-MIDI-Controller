@@ -1,10 +1,10 @@
 #include "RotaryEncoder.h"
 #include "SwitchControl.h"
+#include "ThumbJoystick.h"
 
 RotaryEncoder encoder (5, 6, 4);
-RotaryEncoder encoder2 (0, 1, 2);
-
 SwitchControl pushButton (3);
+ThumbJoystick joystick (A0);
 
 void setup() 
 {
@@ -14,12 +14,14 @@ void setup()
   encoder.onEncoderChange (processEncoderChange);
   encoder.onSwitchChange (processEncoderSwitchChange);
   pushButton.onSwitchStateChange (processPushButtonChange);
+  joystick.onJoystickChange (processJoystickChange);
 }
 
 void loop() 
 {
   encoder.update();
   pushButton.update();
+  joystick.update();
 
 }
 
@@ -28,11 +30,6 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
   if (enc == encoder)
   {
     Serial.print ("Enc1: ");
-    Serial.println (enc_value);
-  }
-  else if (enc == encoder2)
-  {
-    Serial.print ("Enc2: ");
     Serial.println (enc_value);
   }
 }
@@ -44,11 +41,6 @@ void processEncoderSwitchChange (RotaryEncoder &enc, uint8_t switch_state)
     Serial.print ("Enc1 switch: ");
     Serial.println (switch_state);
   }
-  else if (enc == encoder2)
-  {
-    Serial.print ("Enc2 switch: ");
-    Serial.println (switch_state);
-  }
 }
 
 void processPushButtonChange (SwitchControl &switchControl)
@@ -58,5 +50,14 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.print ("Push Button: ");
     Serial.println (switchControl.getSwitchState());
   }
+}
+
+void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
+{
+  if (thumbJoystick == joystick && isYAxis)
+  {
+    Serial.print ("JS: ");
+    Serial.println (thumbJoystick.getYAxisValue());
+  } 
 }
 
