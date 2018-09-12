@@ -6,7 +6,9 @@ struct EncoderPins
   int8_t pinSwitch;
 };
 
-const EncoderPins PINS_KNOB_CTRL_ENCS[8] = 
+#define NUM_OF_KNOB_CONTROLLERS 8
+
+const EncoderPins PINS_KNOB_CTRL_ENCS[NUM_OF_KNOB_CONTROLLERS] =
 {
   {.pinA = 2, .pinB = 3, .pinSwitch = 41}, //1
   {.pinA = 4, .pinB = 5, .pinSwitch = 42}, //2
@@ -18,38 +20,38 @@ const EncoderPins PINS_KNOB_CTRL_ENCS[8] =
   {.pinA = 21, .pinB = 22, .pinSwitch = 48}, //8
 };
 
-const EncoderPins PINS_DICTATOR_ENC = 
+const EncoderPins PINS_DICTATOR_ENC =
 {
   .pinA = 23,
   .pinB = 24,
   .pinSwitch = 49
 };
 
-const EncoderPins PINS_MIX_ENC = 
+const EncoderPins PINS_MIX_ENC =
 {
   .pinA = 25,
   .pinB = 26,
   .pinSwitch = -1
 };
 
-enum LcdControls
+enum LcdEncoderNames
 {
-  LCD_CTRL_CTRL = 0,
-  LCD_CTRL_PARAM,
-  LCD_CTRL_VAL,
+  LCD_ENC_CTRL = 0,
+  LCD_ENC_PARAM,
+  LCD_ENC_VAL,
 
-  NUM_OF_LCD_CTRLS
+  NUM_OF_LCD_ENCS
 };
 
-const EncoderPins PINS_LCD_ENCS[NUM_OF_LCD_CTRLS] = 
+const EncoderPins PINS_LCD_ENCS[NUM_OF_LCD_ENCS] =
 {
   {.pinA = 27, .pinB = 28, .pinSwitch = 52}, //Control
   {.pinA = 29, .pinB = 30, .pinSwitch = -1}, //Paramater
   {.pinA = 31, .pinB = 32, .pinSwitch = -1}, //Value
-  
+
 };
 
-const uint8_t PINS_KNOB_CTRL_JOYSTICKS[8] = 
+const uint8_t PINS_KNOB_CTRL_JOYSTICKS[NUM_OF_KNOB_CONTROLLERS] =
 {
   A14, //1
   A15, //2
