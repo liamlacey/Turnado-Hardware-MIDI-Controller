@@ -33,9 +33,9 @@ class RotaryEncoder
 
         @param encPin1 - Encoder pin 1
         @param encPin2 - Encoder pin 2
-        @param switchPin - Switch pin
+        @param switchPin - Switch pin. Set to -1 if not using the switch.
     */
-    RotaryEncoder (uint8_t encPin1, uint8_t encPin2, uint8_t switchPin);
+    RotaryEncoder (uint8_t encPin1, uint8_t encPin2, int8_t switchPin);
     ~RotaryEncoder();
 
     /** Reads and updates all control values.
@@ -49,6 +49,7 @@ class RotaryEncoder
         @param enc - The instance of this class that has detected a change
         @param enc_value - The encoder change, where 1 = clockwise and -1 = anticlockwise
     */
+
     void onEncoderChange( void (*)(RotaryEncoder &enc, int enc_value) );
 
     /** Assigns the function you want to be called when the switch is pressed/released.
@@ -75,6 +76,7 @@ class RotaryEncoder
     Encoder *encoder;
     Bounce *switchDebouncer;
 
+    bool switchEnabled = true;
     const int DEBOUNCE_TIME = 5;
     uint8_t switchState = 0;
 };
