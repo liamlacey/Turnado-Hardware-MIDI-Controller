@@ -73,6 +73,8 @@ void setup()
   randomiseButton = new SwitchControl (PIN_RANDOMISE_BUTTON);
   randomiseButton->onSwitchStateChange (processPushButtonChange);
 
+  usbMIDI.setHandleControlChange(ProcessMidiControlChange);
+
 }
 
 //=========================================================================
@@ -80,6 +82,9 @@ void setup()
 //=========================================================================
 void loop()
 {
+  //Read from USB MIDI-in
+  usbMIDI.read();
+
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
     knobControllersEncoders[i]->update();
@@ -244,3 +249,17 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
 
   } //if (isYAxis)
 }
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void ProcessMidiControlChange (byte channel, byte control, byte value)
+{
+  Serial.print ("MIDI-in CC: ");
+  Serial.print (channel);
+  Serial.print (" ");
+  Serial.print (control);
+  Serial.print (" ");
+  Serial.println (value);
+}
+
