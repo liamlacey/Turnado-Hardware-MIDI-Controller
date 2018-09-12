@@ -1,7 +1,9 @@
+#include "PinAllocations.h"
 #include "RotaryEncoder.h"
 #include "SwitchControl.h"
 #include "ThumbJoystick.h"
-#include "PinAllocations.h"
+
+#include "ILI9341_t3.h"
 
 //=========================================================================
 RotaryEncoder* knobControllersEncoders[NUM_OF_KNOB_CONTROLLERS];
@@ -19,6 +21,13 @@ SwitchControl* presetDownButton;
 
 SwitchControl* randomiseButton;
 
+//For LCD use hardware SPI (#13, #12, #11) and the custom allocated for CS/DC
+ILI9341_t3 lcd = ILI9341_t3 (PIN_LCD_CS, PIN_LCD_DC);
+
+const int LCD_FRAME_RATE = 30;
+long lcdPreviousMillis = 0;
+const int LCD_COLOUR_BCKGND = ILI9341_BLACK;
+
 //=========================================================================
 //=========================================================================
 //=========================================================================
@@ -26,6 +35,10 @@ void setup()
 {
   Serial.begin(9600);
   delay(500);
+
+  lcd.begin();
+  lcd.setRotation (3);
+  lcd.fillScreen (LCD_COLOUR_BCKGND);
 
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
@@ -85,6 +98,21 @@ void loop()
   presetUpButton->update();
   presetDownButton->update();
   randomiseButton->update();
+
+  //update the LCD display at the set frame rate
+  if ((millis() - lcdPreviousMillis) > (1000.0 / (float)LCD_FRAME_RATE))
+  {
+    updateLcd();
+    lcdPreviousMillis = millis();
+  }
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void updateLcd()
+{
+  //Do LCD drawing here...
 }
 
 //=========================================================================
