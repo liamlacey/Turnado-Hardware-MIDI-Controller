@@ -1,6 +1,7 @@
 #include "RotaryEncoder.h"
 #include "SwitchControl.h"
 #include "ThumbJoystick.h"
+#include "PinAllocations.h"
 
 RotaryEncoder encoder (5, 6, 4);
 SwitchControl pushButton (3);
@@ -60,4 +61,3 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
     Serial.println (thumbJoystick.getYAxisValue());
   } 
 }
-
