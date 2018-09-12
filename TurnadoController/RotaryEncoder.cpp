@@ -45,12 +45,12 @@ void RotaryEncoder::update()
     if (switchDebouncer->risingEdge())
     {
       switchState = 0;
-      this->handle_switch_change (*this, switchState);
+      this->handle_switch_change (*this);
     }
     else if (switchDebouncer->fallingEdge())
     {
       switchState = 1;
-      this->handle_switch_change (*this, switchState);
+      this->handle_switch_change (*this);
     }
     
   }//if (switchEnabled)
@@ -67,7 +67,7 @@ void RotaryEncoder::onEncoderChange( void (*function)(RotaryEncoder&, int) )
   this->handle_encoder_change = function;
 }
 
-void RotaryEncoder::onSwitchChange( void (*function)(RotaryEncoder&, uint8_t) )
+void RotaryEncoder::onSwitchChange( void (*function)(RotaryEncoder&) )
 {
   this->handle_switch_change = function;
 }

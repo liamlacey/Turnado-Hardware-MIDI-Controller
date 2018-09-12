@@ -55,9 +55,8 @@ class RotaryEncoder
     /** Assigns the function you want to be called when the switch is pressed/released.
 
         @param enc - The instance of this class that has detected a change
-        @param switch_value - The new switch value, where 1 = pressed and 0 = released
     */
-    void onSwitchChange( void (*)(RotaryEncoder &enc, uint8_t switch_value) );
+    void onSwitchChange( void (*)(RotaryEncoder &enc) );
 
     /** Returns the current state of the switch (0-1)
     */
@@ -71,7 +70,7 @@ class RotaryEncoder
   private:
 
     void (*handle_encoder_change)(RotaryEncoder &enc, int enc_value) = NULL;
-    void (*handle_switch_change)(RotaryEncoder &enc, uint8_t switch_value) = NULL;
+    void (*handle_switch_change)(RotaryEncoder &enc) = NULL;
 
     Encoder *encoder;
     Bounce *switchDebouncer;
