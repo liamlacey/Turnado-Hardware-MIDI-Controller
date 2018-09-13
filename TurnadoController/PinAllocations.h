@@ -6,8 +6,6 @@ struct EncoderPins
   int8_t pinSwitch;
 };
 
-#define NUM_OF_KNOB_CONTROLLERS 8
-
 const EncoderPins PINS_KNOB_CTRL_ENCS[NUM_OF_KNOB_CONTROLLERS] =
 {
   {.pinA = 53, .pinB = 40, .pinSwitch = 52}, //1
@@ -32,15 +30,6 @@ const EncoderPins PINS_MIX_ENC =
   .pinA = 28,
   .pinB = 27,
   .pinSwitch = -1
-};
-
-enum LcdEncoderNames
-{
-  LCD_ENC_CTRL = 0,
-  LCD_ENC_PARAM,
-  LCD_ENC_VAL,
-
-  NUM_OF_LCD_ENCS
 };
 
 const EncoderPins PINS_LCD_ENCS[NUM_OF_LCD_ENCS] =

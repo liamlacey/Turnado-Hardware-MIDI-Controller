@@ -4,7 +4,6 @@
 
 //=========================================================================
 //DEV STUFF...
-//#define DISABLE_USB_MIDI 1
 #define DISABLE_JOYSTICKS 1
 
 //=========================================================================
@@ -100,7 +99,6 @@ void updateControls()
   presetUpButton->update();
   presetDownButton->update();
   randomiseButton->update();
-
 }
 
 //=========================================================================
@@ -112,10 +110,12 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
   {
     if (enc == *knobControllersEncoders[i])
     {
+#ifdef DEBUG
       Serial.print ("Knob Controller ");
       Serial.print (i + 1);
       Serial.print (" encoder: ");
       Serial.println (enc_value);
+#endif
     }
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
@@ -124,24 +124,30 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
   {
     if (enc == *lcdEncoders[i])
     {
+#ifdef DEBUG
       Serial.print ("LCD encoder ");
       Serial.print (i + 1);
       Serial.print (": ");
       Serial.println (enc_value);
+#endif
     }
 
   } //for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
 
   if (enc == *dictatorEncoder)
   {
+#ifdef DEBUG
     Serial.print ("Dictator encoder: ");
     Serial.println (enc_value);
+#endif
   }
 
   else if (enc == *mixEncoder)
   {
+#ifdef DEBUG
     Serial.print ("Mix encoder: ");
     Serial.println (enc_value);
+#endif
   }
 }
 
@@ -154,10 +160,12 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
   {
     if (enc == *knobControllersEncoders[i])
     {
+#ifdef DEBUG
       Serial.print ("Knob Controller ");
       Serial.print (i + 1);
       Serial.print (" encoder switch: ");
       Serial.println (enc.getSwitchState());
+#endif
     }
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
@@ -166,18 +174,22 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
   {
     if (enc == *lcdEncoders[i])
     {
+#ifdef DEBUG
       Serial.print ("Lcd encoder ");
       Serial.print (i + 1);
       Serial.print (" switch: ");
       Serial.println (enc.getSwitchState());
+#endif
     }
 
   } //for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
 
   if (enc == *dictatorEncoder)
   {
+#ifdef DEBUG
     Serial.print ("Dictator encoder switch: ");
     Serial.println (enc.getSwitchState());
+#endif
   }
 }
 
@@ -188,20 +200,26 @@ void processPushButtonChange (SwitchControl &switchControl)
 {
   if (switchControl == *presetUpButton)
   {
+#ifdef DEBUG
     Serial.print ("Preset Up Button: ");
     Serial.println (switchControl.getSwitchState());
+#endif
   }
 
   else if (switchControl == *presetDownButton)
   {
+#ifdef DEBUG
     Serial.print ("Preset Down Button: ");
     Serial.println (switchControl.getSwitchState());
+#endif
   }
 
   else if (switchControl == *randomiseButton)
   {
+#ifdef DEBUG
     Serial.print ("Randomise Button: ");
     Serial.println (switchControl.getSwitchState());
+#endif
   }
 }
 
@@ -216,18 +234,22 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
     {
       if (thumbJoystick == *knobControllersJoysticks[i])
       {
+#ifdef DEBUG
         Serial.print ("Knob Controller ");
         Serial.print (i + 1);
         Serial.print (" joystick: ");
         Serial.println (thumbJoystick.getYAxisValue());
+#endif
       }
 
     } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
     if (thumbJoystick == *dictatorJoystick)
     {
+#ifdef DEBUG
       Serial.print ("Dictator Joystick: ");
       Serial.println (thumbJoystick.getYAxisValue());
+#endif
     }
 
   } //if (isYAxis)
