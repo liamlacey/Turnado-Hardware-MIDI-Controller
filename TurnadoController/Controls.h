@@ -120,20 +120,6 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
-  for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
-  {
-    if (enc == *lcdEncoders[i])
-    {
-#ifdef DEBUG
-      Serial.print ("LCD encoder ");
-      Serial.print (i + 1);
-      Serial.print (": ");
-      Serial.println (enc_value);
-#endif
-    }
-
-  } //for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
-
   if (enc == *dictatorEncoder)
   {
 #ifdef DEBUG
@@ -146,6 +132,32 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
   {
 #ifdef DEBUG
     Serial.print ("Mix encoder: ");
+    Serial.println (enc_value);
+#endif
+  }
+
+  else if (enc == *lcdEncoders[LCD_ENC_CTRL])
+  {
+#ifdef DEBUG
+    Serial.print ("LCD CTRL encoder: ");
+    Serial.println (enc_value);
+#endif
+
+    lcdSetSelectedMenu (enc_value);
+  }
+
+  else if (enc == *lcdEncoders[LCD_ENC_PARAM])
+  {
+#ifdef DEBUG
+    Serial.print ("LCD Param encoder: ");
+    Serial.println (enc_value);
+#endif
+  }
+
+  else if (enc == *lcdEncoders[LCD_ENC_VAL])
+  {
+#ifdef DEBUG
+    Serial.print ("LCD Value encoder: ");
     Serial.println (enc_value);
 #endif
   }
