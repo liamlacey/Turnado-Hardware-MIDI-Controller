@@ -6,6 +6,12 @@
 #include "ILI9341_t3.h"
 
 //=========================================================================
+//DEV STUFF...
+
+//#define DISABLE_USB_MIDI 1
+#define DISABLE_JOYSTICKS 1
+
+//=========================================================================
 RotaryEncoder* knobControllersEncoders[NUM_OF_KNOB_CONTROLLERS];
 ThumbJoystick* knobControllersJoysticks[NUM_OF_KNOB_CONTROLLERS];
 
@@ -40,6 +46,14 @@ void setup()
   lcd.setRotation (3);
   lcd.fillScreen (LCD_COLOUR_BCKGND);
 
+  lcd.drawChar(10, 10, 'T', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(25, 10, 'U', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(40, 10, 'R', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(55, 10, 'N', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(70, 10, 'A', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(85, 10, 'D', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+  lcd.drawChar(100, 10, 'O', ILI9341_RED, LCD_COLOUR_BCKGND, 2);
+
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
     knobControllersEncoders[i] = new RotaryEncoder (PINS_KNOB_CTRL_ENCS[i].pinA, PINS_KNOB_CTRL_ENCS[i].pinB, PINS_KNOB_CTRL_ENCS[i].pinSwitch);
@@ -68,12 +82,16 @@ void setup()
   }
 
   presetUpButton = new SwitchControl (PIN_PRESET_UP_BUTTON);
+  presetUpButton->onSwitchStateChange (processPushButtonChange);
   presetDownButton = new SwitchControl (PIN_PRESET_DOWN_BUTTON);
+  presetDownButton->onSwitchStateChange (processPushButtonChange);
 
   randomiseButton = new SwitchControl (PIN_RANDOMISE_BUTTON);
   randomiseButton->onSwitchStateChange (processPushButtonChange);
 
+#ifndef DISABLE_USB_MIDI
   usbMIDI.setHandleControlChange(ProcessMidiControlChange);
+#endif
 
 }
 
@@ -82,17 +100,27 @@ void setup()
 //=========================================================================
 void loop()
 {
+
+#ifndef DISABLE_USB_MIDI
   //Read from USB MIDI-in
   usbMIDI.read();
+#endif
 
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
     knobControllersEncoders[i]->update();
+    
+#ifndef DISABLE_JOYSTICKS
     knobControllersJoysticks[i]->update();
+#endif
   }
 
   dictatorEncoder->update();
+  
+#ifndef DISABLE_JOYSTICKS
   dictatorJoystick->update();
+#endif
+
   mixEncoder->update();
 
   for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
@@ -193,7 +221,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 
   if (enc == *dictatorEncoder)
   {
-    Serial.print ("Dictator encoder: ");
+    Serial.print ("Dictator encoder switch: ");
     Serial.println (enc.getSwitchState());
   }
 }
