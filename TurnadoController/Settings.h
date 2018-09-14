@@ -41,7 +41,7 @@ struct ParamData
   bool needsSavingToEeprom = false;
 };
 
-const ParamData paramDataTemplateChannelGlobal = {"Channel", .minVal = 0, .maxVal = 15, .memAddrOffset = PARAM_INDEX_MIDI_CHAN, .defaultValue = 0, .value = 0, .needsSavingToEeprom = false};
+const ParamData paramDataTemplateChannelGlobal = {"Channel", .minVal = 1, .maxVal = 16, .memAddrOffset = PARAM_INDEX_MIDI_CHAN, .defaultValue = 0, .value = 0, .needsSavingToEeprom = false};
 const ParamData paramDataTemplateChannelControl = {"Channel", .minVal = 0, .maxVal = 16, .memAddrOffset = PARAM_INDEX_MIDI_CHAN, .defaultValue = 16, .value = 0, .needsSavingToEeprom = false};
 const ParamData paramDataTemplateCcNumber = {"CC Num", .minVal = 0, .maxVal = 127, .memAddrOffset = PARAM_INDEX_CC_NUM, .defaultValue = 1, .value = 0, .needsSavingToEeprom = false};
 const ParamData paramDataTemplatePrgmStartNumber = {"1st Prgm", .minVal = 0, .maxVal = 127, .memAddrOffset = PARAM_INDEX_START_NUM, .defaultValue = 0, .value = 0, .needsSavingToEeprom = false};

@@ -18,6 +18,7 @@ int8_t lcdPrevSelectedMenuParam = 0;
 
 //=========================================================================
 void lcdDisplayCompleteMenu();
+void lcdPrintParamValueToDisplay (uint8_t menu, uint8_t param);
 
 //=========================================================================
 //=========================================================================
@@ -92,7 +93,7 @@ void lcdDisplayMenuParamsAndValues()
     lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].name);
 
     lcd.setCursor (240, i * LCD_TEXT_LINE_SPACING);
-    lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].value);
+    lcdPrintParamValueToDisplay (lcdCurrentlySelectedMenu, i);
 
   } //for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
 }
@@ -178,7 +179,7 @@ void lcdUpdateMenuParamsAndValuesDisplay()
         lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].name);
 
         lcd.setCursor (240, i * LCD_TEXT_LINE_SPACING);
-        lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].value);
+        lcdPrintParamValueToDisplay (lcdCurrentlySelectedMenu, i);
       }
 
     } //for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
@@ -195,7 +196,25 @@ void lcdUpdateMenuSelectedValue()
 
   lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
   lcd.setCursor (240, lcdCurrentSelectedMenuParam * LCD_TEXT_LINE_SPACING);
-  lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value);
+
+  lcdPrintParamValueToDisplay (lcdCurrentlySelectedMenu, lcdCurrentSelectedMenuParam);
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdPrintParamValueToDisplay (uint8_t menu, uint8_t param)
+{
+  if (param == PARAM_INDEX_MIDI_CHAN &&
+      menu != SETTINGS_GLOBAL &&
+      settingsData[menu].paramData[param].value == 0)
+  {
+    lcd.println ("Global");
+  }
+  else
+  {
+    lcd.println (settingsData[menu].paramData[param].value);
+  }
 }
 
 //=========================================================================
