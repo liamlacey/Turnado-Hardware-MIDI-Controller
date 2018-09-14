@@ -10,6 +10,8 @@ const int LCD_COLOUR_TEXT = ILI9341_RED;
 
 uint8_t lcdDisplayMode = LCD_DISPLAY_MODE_CONTROLS;
 
+//TODO: use settingsData and other defines in Settings.h for LCD menu stuff instead of the below
+
 #define LCD_NUM_OF_MENUS 13
 #define LCD_MAX_NUM_OF_MENU_PARAMS 8
 
