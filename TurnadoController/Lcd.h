@@ -47,7 +47,7 @@ int8_t lcdPrevSelectedMenuParam = 0;
 
 
 //=========================================================================
-void lcdDisplayMenu();
+void lcdDisplayCompleteMenu();
 
 //=========================================================================
 //=========================================================================
@@ -59,7 +59,7 @@ void setupLcd()
   lcd.fillScreen (LCD_COLOUR_BCKGND);
 
   //testing menu
-  lcdDisplayMenu();
+  lcdDisplayCompleteMenu();
 }
 
 //=========================================================================
@@ -89,12 +89,8 @@ void lcdSetDisplayMode (uint8_t mode)
 //=========================================================================
 //=========================================================================
 //=========================================================================
-void lcdDisplayMenu()
+void lcdDisplayMenus()
 {
-  lcd.fillScreen (LCD_COLOUR_BCKGND);
-
-  lcd.setTextSize (2);
-
   for (auto i = 0; i < LCD_NUM_OF_MENUS; i++)
   {
     if (i == lcdCurrentlySelectedMenu)
@@ -105,8 +101,13 @@ void lcdDisplayMenu()
     lcd.setCursor (0, i * LCD_TEXT_LINE_SPACING);
     lcd.println (lcdMenuData[i].menuName);
   }
-
-  lcd.fillRect (105, 0, 2, lcd.height(), LCD_COLOUR_TEXT);
+}
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdDisplayMenuParamsAndValues()
+{
+  lcd.fillRect (120, 0, 105, lcd.height(), LCD_COLOUR_BCKGND);
 
   for (auto i = 0; i < LCD_MAX_NUM_OF_MENU_PARAMS; i++)
   {
@@ -118,55 +119,91 @@ void lcdDisplayMenu()
     lcd.setCursor (120, i * LCD_TEXT_LINE_SPACING);
     lcd.println (lcdMenuData[lcdCurrentlySelectedMenu].paramNames[i]);
   }
+}
 
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdDisplayCompleteMenu()
+{
+  lcd.fillScreen (LCD_COLOUR_BCKGND);
+  lcd.setTextSize (2);
+
+  lcdDisplayMenus();
+  lcdDisplayMenuParamsAndValues();
+
+  lcd.fillRect (105, 0, 2, lcd.height(), LCD_COLOUR_TEXT);
   lcd.fillRect (225, 0, 2, lcd.height(), LCD_COLOUR_TEXT);
 }
 
 //=========================================================================
 //=========================================================================
 //=========================================================================
-
-void lcdUpdateMenu()
+void lcdUpdateMenusDisplay()
 {
-  lcd.setTextSize (2);
-
-  for (auto i = 0; i < LCD_NUM_OF_MENUS; i++)
+  if (lcdCurrentlySelectedMenu != lcdPrevSelectedMenu)
   {
-    bool updateText = false;
-
-    if (i == lcdCurrentlySelectedMenu)
+    for (auto i = 0; i < LCD_NUM_OF_MENUS; i++)
     {
-      updateText = true;
-      lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
-    }
-    else if (i == lcdPrevSelectedMenu)
-    {
-      updateText = true;
-      lcd.setTextColor (LCD_COLOUR_TEXT, LCD_COLOUR_BCKGND);
-    }
+      bool updateText = false;
 
-    if (updateText)
-    {
-      lcd.setCursor (0, i * LCD_TEXT_LINE_SPACING);
-      lcd.println (lcdMenuData[i].menuName);
-    }
-  }
+      if (i == lcdPrevSelectedMenu)
+      {
+        updateText = true;
+        lcd.setTextColor (LCD_COLOUR_TEXT, LCD_COLOUR_BCKGND);
+      }
+      if (i == lcdCurrentlySelectedMenu)
+      {
+        updateText = true;
+        lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
+      }
 
-  lcd.fillRect (120, 0, 105, lcd.height(), LCD_COLOUR_BCKGND);
+      if (updateText)
+      {
+        lcd.setCursor (0, i * LCD_TEXT_LINE_SPACING);
+        lcd.println (lcdMenuData[i].menuName);
+
+        lcdDisplayMenuParamsAndValues();
+      }
+
+    } //for (auto i = 0; i < LCD_NUM_OF_MENUS; i++)
+
+  } //if (lcdCurrentlySelectedMenu != lcdPrevSelectedMenu)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdUpdateMenuParamsAndValuesDisplay()
+{
+  if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
+  {
+    lcd.fillRect (120, 0, 105, lcd.height(), LCD_COLOUR_BCKGND);
 
     for (auto i = 0; i < LCD_MAX_NUM_OF_MENU_PARAMS; i++)
     {
+      bool updateText = false;
+
+      if (i == lcdPrevSelectedMenuParam)
+      {
+        updateText = true;
+        lcd.setTextColor (LCD_COLOUR_TEXT, LCD_COLOUR_BCKGND);
+      }
       if (i == lcdCurrentSelectedMenuParam)
+      {
+        updateText = true;
         lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
-      else
-        lcd.setTextColor (LCD_COLOUR_TEXT);
-  
-      lcd.setCursor (120, i * LCD_TEXT_LINE_SPACING);
-      lcd.println (lcdMenuData[lcdCurrentlySelectedMenu].paramNames[i]);
-    }
+      }
 
-  lcdPrevSelectedMenu = lcdCurrentlySelectedMenu;
+      if (updateText)
+      {
+        lcd.setCursor (120, i * LCD_TEXT_LINE_SPACING);
+        lcd.println (lcdMenuData[lcdCurrentlySelectedMenu].paramNames[i]);
+      }
 
+    } //for (auto i = 0; i < LCD_MAX_NUM_OF_MENU_PARAMS; i++)
+    
+  } //if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
 }
 
 //=========================================================================
@@ -175,7 +212,26 @@ void lcdUpdateMenu()
 void lcdSetSelectedMenu (int8_t incVal)
 {
   lcdCurrentlySelectedMenu = constrain (lcdCurrentlySelectedMenu + incVal, 0, LCD_NUM_OF_MENUS - 1);
-  lcdUpdateMenu();
+
+  if (lcdCurrentlySelectedMenu != lcdPrevSelectedMenu)
+  {
+    lcdUpdateMenusDisplay();
+    lcdPrevSelectedMenu = lcdCurrentlySelectedMenu;
+  }
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdSetSelectedParam (int8_t incVal)
+{
+  lcdCurrentSelectedMenuParam = constrain (lcdCurrentSelectedMenuParam + incVal, 0, lcdMenuData[lcdCurrentlySelectedMenu].numOfParams - 1);
+
+  if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
+  {
+    lcdUpdateMenuParamsAndValuesDisplay();
+    lcdPrevSelectedMenuParam = lcdCurrentSelectedMenuParam;
+  }
 }
 
 

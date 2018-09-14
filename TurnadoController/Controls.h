@@ -152,6 +152,8 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     Serial.print ("LCD Param encoder: ");
     Serial.println (enc_value);
 #endif
+
+    lcdSetSelectedParam (enc_value);
   }
 
   else if (enc == *lcdEncoders[LCD_ENC_VAL])
@@ -182,26 +184,22 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
-  for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
-  {
-    if (enc == *lcdEncoders[i])
-    {
-#ifdef DEBUG
-      Serial.print ("Lcd encoder ");
-      Serial.print (i + 1);
-      Serial.print (" switch: ");
-      Serial.println (enc.getSwitchState());
-#endif
-    }
-
-  } //for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
-
   if (enc == *dictatorEncoder)
   {
 #ifdef DEBUG
     Serial.print ("Dictator encoder switch: ");
     Serial.println (enc.getSwitchState());
 #endif
+  }
+
+  else if (enc == *lcdEncoders[LCD_ENC_CTRL])
+  {
+#ifdef DEBUG
+    Serial.print ("LCD CTRL encoder swich: ");
+    Serial.println (enc.getSwitchState());
+#endif
+
+    //TODO: toggle LCD display mode
   }
 }
 
