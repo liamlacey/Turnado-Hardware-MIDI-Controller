@@ -1,9 +1,6 @@
 #include <EEPROM.h>
 
 //=========================================================================
-
-#define SETTINGS_NUM_OF_CATS 13
-
 enum SettingsCategories
 {
   SETTINGS_GLOBAL = 0,
@@ -18,7 +15,9 @@ enum SettingsCategories
   SETTINGS_DICTATOR,
   SETTINGS_MIX,
   SETTINGS_RANDOMISE,
-  SETTINGS_PRESET
+  SETTINGS_PRESET,
+
+  SETTINGS_NUM_OF_CATS
 };
 
 #define SETTINGS_MAX_NUM_PARAMS 16
