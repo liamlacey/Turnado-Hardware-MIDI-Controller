@@ -162,6 +162,8 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     Serial.print ("LCD Value encoder: ");
     Serial.println (enc_value);
 #endif
+
+    lcdSetSelectedParamValue (enc_value);
   }
 }
 

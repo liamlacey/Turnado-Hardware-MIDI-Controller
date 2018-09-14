@@ -41,6 +41,8 @@ void loop()
 
   updateControls();
   updateLcd();
+
+  settingsUpdateEeprom();
 }
 
 //=========================================================================

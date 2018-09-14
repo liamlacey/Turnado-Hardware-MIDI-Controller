@@ -70,7 +70,7 @@ void lcdDisplayMenus()
 
     lcd.setCursor (0, i * LCD_TEXT_LINE_SPACING);
     lcd.println (settingsData[i].name);
-    
+
   }//for (auto i = 0; i < SETTINGS_NUM_OF_CATS; i++)
 }
 //=========================================================================
@@ -79,8 +79,9 @@ void lcdDisplayMenus()
 void lcdDisplayMenuParamsAndValues()
 {
   lcd.fillRect (120, 0, 105, lcd.height(), LCD_COLOUR_BCKGND);
+  lcd.fillRect (240, 0, 80, lcd.height(), LCD_COLOUR_BCKGND);
 
-  for (auto i = 0; i < SETTINGS_MAX_NUM_PARAMS; i++)
+  for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
   {
     if (i == lcdCurrentSelectedMenuParam)
       lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
@@ -89,9 +90,11 @@ void lcdDisplayMenuParamsAndValues()
 
     lcd.setCursor (120, i * LCD_TEXT_LINE_SPACING);
     lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].name);
-    
-    
-  } //for (auto i = 0; i < SETTINGS_MAX_NUM_PARAMS; i++)
+
+    lcd.setCursor (240, i * LCD_TEXT_LINE_SPACING);
+    lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].value);
+
+  } //for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
 }
 
 //=========================================================================
@@ -152,8 +155,9 @@ void lcdUpdateMenuParamsAndValuesDisplay()
   if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
   {
     lcd.fillRect (120, 0, 105, lcd.height(), LCD_COLOUR_BCKGND);
+    lcd.fillRect (240, 0, 80, lcd.height(), LCD_COLOUR_BCKGND);
 
-    for (auto i = 0; i < SETTINGS_MAX_NUM_PARAMS; i++)
+    for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
     {
       bool updateText = false;
 
@@ -172,11 +176,26 @@ void lcdUpdateMenuParamsAndValuesDisplay()
       {
         lcd.setCursor (120, i * LCD_TEXT_LINE_SPACING);
         lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].name);
+
+        lcd.setCursor (240, i * LCD_TEXT_LINE_SPACING);
+        lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[i].value);
       }
 
-    } //for (auto i = 0; i < LCD_MAX_NUM_OF_MENU_PARAMS; i++)
-    
+    } //for (auto i = 0; i < settingsData[lcdCurrentlySelectedMenu].numOfParams; i++)
+
   } //if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdUpdateMenuSelectedValue()
+{
+  lcd.fillRect (240, lcdCurrentSelectedMenuParam * LCD_TEXT_LINE_SPACING, 80, LCD_TEXT_LINE_SPACING, LCD_COLOUR_BCKGND);
+
+  lcd.setTextColor (LCD_COLOUR_BCKGND, LCD_COLOUR_TEXT);
+  lcd.setCursor (240, lcdCurrentSelectedMenuParam * LCD_TEXT_LINE_SPACING);
+  lcd.println (settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value);
 }
 
 //=========================================================================
@@ -204,6 +223,27 @@ void lcdSetSelectedParam (int8_t incVal)
   {
     lcdUpdateMenuParamsAndValuesDisplay();
     lcdPrevSelectedMenuParam = lcdCurrentSelectedMenuParam;
+  }
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdSetSelectedParamValue (int8_t incVal)
+{
+  uint8_t currentVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value;
+  uint8_t minVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].minVal;
+  uint8_t maxVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].maxVal;
+
+  uint8_t newVal = constrain (currentVal + incVal, minVal, maxVal);
+
+  if (newVal != currentVal)
+  {
+    settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value = newVal;
+    lcdUpdateMenuSelectedValue();
+
+    //flag that the new value needs saving to EEPROM
+    settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].needsSavingToEeprom = true;
   }
 }
 
