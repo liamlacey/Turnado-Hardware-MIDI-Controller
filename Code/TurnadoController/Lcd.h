@@ -22,11 +22,13 @@ uint8_t lcdDisplayMode = LCD_DISPLAY_MODE_CONTROLS;
 //controls display stuff...
 
 const uint8_t LCD_SLIDER_WIDTH = 20;
-
-const uint8_t LCD_KNOB_SLIDER_LENGTH = 127;
-const uint8_t LCD_KNOB_SLIDER_SPACING = 43;
+//Setting slider lengths to a multiple of 127 makes drawing
+//MIDI values a lot less complex (if midi to pixel value is fractional
+//then there will be issues when rounding to int for pixels, where not
+//all needed pixels will be updated).
+const uint8_t LCD_VERT_SLIDER_LENGTH = 127;
 const uint8_t LCD_HORZ_SLIDER_LENGTH = 254;
-
+const uint8_t LCD_VERT_SLIDER_SPACING = 43;
 const uint8_t LCD_DICT_SLIDER_Y_POS = 60;
 const uint8_t LCD_MIX_SLIDER_Y_POS = 25;
 
@@ -95,7 +97,7 @@ void updateLcd()
             if (lcdSliderValue[i] > lcdPrevSliderValue[i])
             {
               //increase the 'value' of the slider by drawing the value difference on the top
-              lcd.fillRect (i * LCD_KNOB_SLIDER_SPACING,
+              lcd.fillRect (i * LCD_VERT_SLIDER_SPACING,
                             (lcd.height() - lcdSliderValue[i]) - (LCD_TEXT_LINE_SPACING + 2),
                             LCD_SLIDER_WIDTH,
                             lcdSliderValue[i] - lcdPrevSliderValue[i],
@@ -105,7 +107,7 @@ void updateLcd()
             else
             {
               //decrease the 'value' of the slider by 'clearing' the value difference from the top
-              lcd.fillRect (i * LCD_KNOB_SLIDER_SPACING,
+              lcd.fillRect (i * LCD_VERT_SLIDER_SPACING,
                             (lcd.height() - lcdPrevSliderValue[i]) - (LCD_TEXT_LINE_SPACING + 2),
                             LCD_SLIDER_WIDTH,
                             lcdPrevSliderValue[i] - lcdSliderValue[i],
@@ -203,13 +205,13 @@ void lcdDisplayControls()
   //draw the 8 knob controller values as vertical 'sliders' with numbers underneath at the bottom of the display
   for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
   {
-    lcd.fillRect (i * LCD_KNOB_SLIDER_SPACING,
-                  (lcd.height() - LCD_KNOB_SLIDER_LENGTH) - (LCD_TEXT_LINE_SPACING + 2),
+    lcd.fillRect (i * LCD_VERT_SLIDER_SPACING,
+                  (lcd.height() - LCD_VERT_SLIDER_LENGTH) - (LCD_TEXT_LINE_SPACING + 2),
                   LCD_SLIDER_WIDTH,
-                  LCD_KNOB_SLIDER_LENGTH,
+                  LCD_VERT_SLIDER_LENGTH,
                   LCD_COLOUR_SLIDERS_BCKGND);
 
-    lcd.setCursor ((i * LCD_KNOB_SLIDER_SPACING) + 5, lcd.height() - LCD_TEXT_LINE_SPACING);
+    lcd.setCursor ((i * LCD_VERT_SLIDER_SPACING) + 5, lcd.height() - LCD_TEXT_LINE_SPACING);
     lcd.println (i + 1);
 
   } //for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
