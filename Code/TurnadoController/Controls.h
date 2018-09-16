@@ -164,6 +164,7 @@ void setCurrentMidiProgramNumber (int8_t incVal)
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value)
 {
+  //=========================================================================
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
     if (enc == *knobControllersEncoders[i])
@@ -187,6 +188,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
+  //=========================================================================
   if (enc == *mixEncoder)
   {
 #ifdef DEBUG
@@ -212,6 +214,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
 
   } //if (enc == *mixEncoder)
 
+  //=========================================================================
   else if (enc == *lcdEncoders[LCD_ENC_CTRL])
   {
 #ifdef DEBUG
@@ -222,6 +225,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     lcdSetSelectedMenu (enc_value);
   }
 
+  //=========================================================================
   else if (enc == *lcdEncoders[LCD_ENC_PARAM])
   {
 #ifdef DEBUG
@@ -232,6 +236,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     lcdSetSelectedParam (enc_value);
   }
 
+  //=========================================================================
   else if (enc == *lcdEncoders[LCD_ENC_VAL])
   {
 #ifdef DEBUG
@@ -248,6 +253,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
 //=========================================================================
 void processEncoderSwitchChange (RotaryEncoder &enc)
 {
+  //=========================================================================
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
   {
     if (enc == *knobControllersEncoders[i])
@@ -276,6 +282,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
+  //=========================================================================
   if (enc == *lcdEncoders[LCD_ENC_CTRL])
   {
 #ifdef DEBUG
@@ -292,6 +299,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 //=========================================================================
 void processPushButtonChange (SwitchControl &switchControl)
 {
+  //=========================================================================
   if (switchControl == *presetUpButton)
   {
 #ifdef DEBUG
@@ -311,6 +319,7 @@ void processPushButtonChange (SwitchControl &switchControl)
 
   } //if (switchControl == *presetUpButton)
 
+  //=========================================================================
   else if (switchControl == *presetDownButton)
   {
 #ifdef DEBUG
@@ -330,6 +339,7 @@ void processPushButtonChange (SwitchControl &switchControl)
 
   } //else if (switchControl == *presetDownButton)
 
+  //=========================================================================
   else if (switchControl == *randomiseButton)
   {
 #ifdef DEBUG
