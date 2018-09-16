@@ -11,12 +11,16 @@ const int LCD_COLOUR_TEXT = ILI9341_RED;
 
 uint8_t lcdDisplayMode = LCD_DISPLAY_MODE_CONTROLS;
 
+//TODO: make the below variable an adjustable global setting?
+const bool lcdAutoSwitchToMenuDisplay = true;
+
 int8_t lcdCurrentlySelectedMenu = 0;
 int8_t lcdPrevSelectedMenu = 0;
 int8_t lcdCurrentSelectedMenuParam = 0;
 int8_t lcdPrevSelectedMenuParam = 0;
 
 //=========================================================================
+void lcdDisplayControls();
 void lcdDisplayCompleteMenu();
 void lcdPrintParamValueToDisplay (uint8_t menu, uint8_t param);
 
@@ -29,8 +33,10 @@ void setupLcd()
   lcd.setRotation (3);
   lcd.fillScreen (LCD_COLOUR_BCKGND);
 
-  //testing menu
-  lcdDisplayCompleteMenu();
+  if (lcdDisplayMode == LCD_DISPLAY_MODE_CONTROLS)
+    lcdDisplayControls();
+  else
+    lcdDisplayCompleteMenu();
 }
 
 //=========================================================================
@@ -52,9 +58,34 @@ void updateLcd()
 //=========================================================================
 void lcdSetDisplayMode (uint8_t mode)
 {
-  //TODO: is display mode has changed, process this.
+  if (mode != lcdDisplayMode)
+  {
+    lcdDisplayMode = mode;
 
-  lcdDisplayMode = mode;
+    if (lcdDisplayMode == LCD_DISPLAY_MODE_CONTROLS)
+      lcdDisplayControls();
+    else
+      lcdDisplayCompleteMenu();
+
+  } //if (mode != lcdDisplayMode)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdToggleDisplayMode()
+{
+  lcdSetDisplayMode (!lcdDisplayMode);
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void lcdDisplayControls()
+{
+  lcd.fillScreen (LCD_COLOUR_BCKGND);
+  lcd.setTextSize (2);
+
 }
 
 //=========================================================================
@@ -222,13 +253,19 @@ void lcdPrintParamValueToDisplay (uint8_t menu, uint8_t param)
 //=========================================================================
 void lcdSetSelectedMenu (int8_t incVal)
 {
-  lcdCurrentlySelectedMenu = constrain (lcdCurrentlySelectedMenu + incVal, 0, SETTINGS_NUM_OF_CATS - 1);
-
-  if (lcdCurrentlySelectedMenu != lcdPrevSelectedMenu)
+  if (lcdDisplayMode == LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
   {
-    lcdUpdateMenusDisplay();
-    lcdPrevSelectedMenu = lcdCurrentlySelectedMenu;
-  }
+    if (lcdDisplayMode != LCD_DISPLAY_MODE_SETTINGS_MENU)
+      lcdSetDisplayMode (LCD_DISPLAY_MODE_SETTINGS_MENU);
+
+    lcdCurrentlySelectedMenu = constrain (lcdCurrentlySelectedMenu + incVal, 0, SETTINGS_NUM_OF_CATS - 1);
+
+    if (lcdCurrentlySelectedMenu != lcdPrevSelectedMenu)
+    {
+      lcdUpdateMenusDisplay();
+      lcdPrevSelectedMenu = lcdCurrentlySelectedMenu;
+    }
+  } //if (lcdDisplayMode = LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
 }
 
 //=========================================================================
@@ -236,13 +273,20 @@ void lcdSetSelectedMenu (int8_t incVal)
 //=========================================================================
 void lcdSetSelectedParam (int8_t incVal)
 {
-  lcdCurrentSelectedMenuParam = constrain (lcdCurrentSelectedMenuParam + incVal, 0, settingsData[lcdCurrentlySelectedMenu].numOfParams - 1);
-
-  if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
+  if (lcdDisplayMode == LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
   {
-    lcdUpdateMenuParamsAndValuesDisplay();
-    lcdPrevSelectedMenuParam = lcdCurrentSelectedMenuParam;
-  }
+    if (lcdDisplayMode != LCD_DISPLAY_MODE_SETTINGS_MENU)
+      lcdSetDisplayMode (LCD_DISPLAY_MODE_SETTINGS_MENU);
+
+    lcdCurrentSelectedMenuParam = constrain (lcdCurrentSelectedMenuParam + incVal, 0, settingsData[lcdCurrentlySelectedMenu].numOfParams - 1);
+
+    if (lcdCurrentSelectedMenuParam != lcdPrevSelectedMenuParam)
+    {
+      lcdUpdateMenuParamsAndValuesDisplay();
+      lcdPrevSelectedMenuParam = lcdCurrentSelectedMenuParam;
+    }
+
+  } //if (lcdDisplayMode = LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
 }
 
 //=========================================================================
@@ -250,20 +294,27 @@ void lcdSetSelectedParam (int8_t incVal)
 //=========================================================================
 void lcdSetSelectedParamValue (int8_t incVal)
 {
-  uint8_t currentVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value;
-  uint8_t minVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].minVal;
-  uint8_t maxVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].maxVal;
-
-  uint8_t newVal = constrain (currentVal + incVal, minVal, maxVal);
-
-  if (newVal != currentVal)
+  if (lcdDisplayMode == LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
   {
-    settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value = newVal;
-    lcdUpdateMenuSelectedValue();
+    if (lcdDisplayMode != LCD_DISPLAY_MODE_SETTINGS_MENU)
+      lcdSetDisplayMode (LCD_DISPLAY_MODE_SETTINGS_MENU);
 
-    //flag that the new value needs saving to EEPROM
-    settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].needsSavingToEeprom = true;
-  }
+    uint8_t currentVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value;
+    uint8_t minVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].minVal;
+    uint8_t maxVal = settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].maxVal;
+
+    uint8_t newVal = constrain (currentVal + incVal, minVal, maxVal);
+
+    if (newVal != currentVal)
+    {
+      settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].value = newVal;
+      lcdUpdateMenuSelectedValue();
+
+      //flag that the new value needs saving to EEPROM
+      settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].needsSavingToEeprom = true;
+    }
+
+  } //if (lcdDisplayMode = LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
 }
 
 

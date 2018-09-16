@@ -347,8 +347,13 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
     Serial.println (enc.getSwitchState());
 #endif
 
-    //TODO: toggle LCD display mode
-  }
+    //if switch is being turned on
+    if (enc.getSwitchState() > 0)
+    {
+      lcdToggleDisplayMode();
+    }
+    
+  } //if (enc == *lcdEncoders[LCD_ENC_CTRL])
 }
 
 //=========================================================================
