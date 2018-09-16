@@ -42,9 +42,16 @@ MixControllerData mixControllerData;
 
 uint8_t randomiseButtonState = 0;
 
+int16_t currentMidiProgramNumber = 0;
 uint8_t presetUpButtonState = 0;
 uint8_t presetDownButtonState = 0;
-int16_t currentMidiProgramNumber = 0;
+bool ignoreNextPresetButtonRelease = false;
+
+enum PresetButtonType
+{
+  PRESET_BUTTON_TYPE_DOWN = 0,
+  PRESET_BUTTON_TYPE_UP
+};
 
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
@@ -157,6 +164,56 @@ void setCurrentMidiProgramNumber (int8_t incVal)
   sendMidiProgramChangeMessage (channel, currentMidiProgramNumber);
 
   //TODO: update LCD display (so top bar shows current MIDI program number)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+uint8_t handlePresetButtonInteraction (uint8_t buttonType, uint8_t newButtonState)
+{
+  uint8_t thisButtonTypeState;
+  uint8_t otherButtonTypeState;
+
+  if (buttonType == PRESET_BUTTON_TYPE_DOWN)
+  {
+    thisButtonTypeState = presetDownButtonState;
+    otherButtonTypeState = presetUpButtonState;
+  }
+  else
+  {
+    thisButtonTypeState = presetUpButtonState;
+    otherButtonTypeState = presetDownButtonState;
+  }
+
+  if (newButtonState != thisButtonTypeState)
+  {
+    //if a button release and we don't want to ignore it
+    if (newButtonState == 0 && !ignoreNextPresetButtonRelease)
+    {
+      //if preset up button release while preset down button isn't held, increment MIDI program number
+      if (buttonType == PRESET_BUTTON_TYPE_UP && otherButtonTypeState == 0)
+        setCurrentMidiProgramNumber (1);
+      //if preset down button release while preset up button isn't held, decrement MIDI program number
+      if (buttonType == PRESET_BUTTON_TYPE_DOWN && otherButtonTypeState == 0)
+        setCurrentMidiProgramNumber (-1);
+      //if other preset button is being held, resend current MIDI program number and flag to ignore next button release
+      else if (otherButtonTypeState > 0)
+      {
+        setCurrentMidiProgramNumber (0);
+        ignoreNextPresetButtonRelease = true;
+      }
+
+    } //if (newButtonState == 0 && !ignoreNextPresetButtonRelease)
+
+    thisButtonTypeState = newButtonState;
+
+  }//if (newButtonState != thisButtonTypeState)
+
+  //if both preset buttons are off, make sure the next release message won't be ignored
+  if (thisButtonTypeState == 0 && otherButtonTypeState == 0)
+    ignoreNextPresetButtonRelease = false;
+
+  return thisButtonTypeState;
 }
 
 //=========================================================================
@@ -307,15 +364,7 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.println (switchControl.getSwitchState());
 #endif
 
-    if (switchControl.getSwitchState() != presetUpButtonState)
-    {
-      //if a button release, increment MIDI program number
-      if (switchControl.getSwitchState() == 0)
-        setCurrentMidiProgramNumber (1);
-
-      presetUpButtonState = switchControl.getSwitchState();
-
-    } //if (switchControl.getSwitchState() == 0)
+    presetUpButtonState = handlePresetButtonInteraction (PRESET_BUTTON_TYPE_UP, switchControl.getSwitchState());
 
   } //if (switchControl == *presetUpButton)
 
@@ -327,15 +376,7 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.println (switchControl.getSwitchState());
 #endif
 
-    if (switchControl.getSwitchState() != presetDownButtonState)
-    {
-      //if a button release, decrement MIDI program number
-      if (switchControl.getSwitchState() == 0)
-        setCurrentMidiProgramNumber (-1);
-
-      presetDownButtonState = switchControl.getSwitchState();
-
-    } //if (switchControl.getSwitchState() == 0)
+    presetDownButtonState = handlePresetButtonInteraction (PRESET_BUTTON_TYPE_DOWN, switchControl.getSwitchState());
 
   } //else if (switchControl == *presetDownButton)
 
@@ -365,6 +406,7 @@ void processPushButtonChange (SwitchControl &switchControl)
     } //if (switchControl.getSwitchState() != randomiseButtonState)
 
   } //else if (switchControl == *randomiseButton)
+
 }
 
 //=========================================================================
