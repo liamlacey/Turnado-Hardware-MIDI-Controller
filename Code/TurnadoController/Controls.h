@@ -139,7 +139,7 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
     //send MIDI message
     byte channel = settingsData[index + 1].paramData[PARAM_INDEX_MIDI_CHAN].value;
     if (channel == 0)
-        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
     byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
     byte value = knobControllerData[index].combinedMidiValue;
     sendMidiCcMessage (channel, control, value);
@@ -165,7 +165,7 @@ void setCurrentMidiProgramNumber (int8_t incVal)
   //send MIDI message
   byte channel = settingsData[SETTINGS_PRESET].paramData[PARAM_INDEX_MIDI_CHAN].value;
   if (channel == 0)
-        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+    channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
   sendMidiProgramChangeMessage (channel, currentMidiProgramNumber);
 
   //TODO: update LCD display (so top bar shows current MIDI program number)
@@ -329,21 +329,22 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
       Serial.print (" encoder switch: ");
       Serial.println (enc.getSwitchState());
 #endif
-    }
 
-    //if switch is being turned on
-    if (enc.getSwitchState() > 0)
-    {
-      //reset base value
-      knobControllerData[i].baseValue = 0;
-
-      if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+      //if switch is being turned on
+      if (enc.getSwitchState() > 0)
       {
-        setKnobControllerCombinedMidiValue(i);
-        knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
-      }
+        //reset base value
+        knobControllerData[i].baseValue = 0;
 
-    } //if (enc.getSwitchState() > 0)
+        if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+        {
+          setKnobControllerCombinedMidiValue(i);
+          knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+        }
+
+      } //if (enc.getSwitchState() > 0)
+
+    }//if (enc == *knobControllersEncoders[i])
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 

@@ -1,6 +1,6 @@
 //=========================================================================
 //DEV STUFF...
-//#define DEBUG 1
+#define DEBUG 1
 
 //=========================================================================
 #define NUM_OF_KNOB_CONTROLLERS 9 //Includes dictator mode controller
