@@ -25,6 +25,7 @@ const uint8_t LCD_SLIDER_WIDTH = 20;
 
 const uint8_t LCD_KNOB_SLIDER_LENGTH = 127;
 const uint8_t LCD_KNOB_SLIDER_SPACING = 43;
+const uint8_t LCD_HORZ_SLIDER_LENGTH = 254;
 
 const uint8_t LCD_DICT_SLIDER_Y_POS = 60;
 const uint8_t LCD_MIX_SLIDER_Y_POS = 25;
@@ -117,20 +118,16 @@ void updateLcd()
           //if one of the horizontal sliders
           else
           {
-            //FIXME: midiToPixelVal needs to be set to the below commented-out code, however
-            //as this is a fractional value the drawing of the slider isn't perfect 
-            //(leaves 'streaks' where pixels that need updating aren't being updated due to
-            //values being rounded when drawing). Need to find a solution around this.
-            //float midiToPixelVal = (lcd.width() - (LCD_KNOB_SLIDER_SPACING * 2)) / 127.0;
+            //number of pixels for 1 MIDI value
             float midiToPixelVal = 2;
-
+            
             uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
             
             //if slider value has increased
             if (lcdSliderValue[i] > lcdPrevSliderValue[i])
             {
               //increase the 'value' of the slider by drawing the value difference to the right
-              lcd.fillRect ((LCD_KNOB_SLIDER_SPACING * 2) + (lcdPrevSliderValue[i] * midiToPixelVal),
+              lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdPrevSliderValue[i] * midiToPixelVal),
                             sliderYPos,
                             (lcdSliderValue[i] - lcdPrevSliderValue[i]) * midiToPixelVal,
                             LCD_SLIDER_WIDTH,
@@ -141,7 +138,7 @@ void updateLcd()
             else
             {
               //decrease the 'value' of the slider by 'clearing' the value difference to the left
-              lcd.fillRect ((LCD_KNOB_SLIDER_SPACING * 2) + (lcdSliderValue[i] * midiToPixelVal),
+              lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * midiToPixelVal),
                             sliderYPos,
                             (lcdPrevSliderValue[i] - lcdSliderValue[i]) * midiToPixelVal,
                             LCD_SLIDER_WIDTH,
@@ -221,11 +218,11 @@ void lcdDisplayControls()
   //with the parameter name on the left-hand side.
 
   lcd.setCursor (0, LCD_DICT_SLIDER_Y_POS);
-  lcd.println ("Dcttr:");
+  lcd.println ("Dict:");
 
-  lcd.fillRect (LCD_KNOB_SLIDER_SPACING * 2,
+  lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
                 LCD_DICT_SLIDER_Y_POS,
-                lcd.width() - (LCD_KNOB_SLIDER_SPACING * 2),
+                LCD_HORZ_SLIDER_LENGTH,
                 LCD_SLIDER_WIDTH,
                 LCD_COLOUR_SLIDERS_BCKGND);
 
@@ -235,9 +232,9 @@ void lcdDisplayControls()
   lcd.setCursor (0, LCD_MIX_SLIDER_Y_POS);
   lcd.println ("Mix:");
 
-  lcd.fillRect (LCD_KNOB_SLIDER_SPACING * 2,
+  lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
                 LCD_MIX_SLIDER_Y_POS,
-                lcd.width() - (LCD_KNOB_SLIDER_SPACING * 2),
+                LCD_HORZ_SLIDER_LENGTH,
                 LCD_SLIDER_WIDTH,
                 LCD_COLOUR_SLIDERS_BCKGND);
 }
