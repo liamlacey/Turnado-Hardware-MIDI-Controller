@@ -264,7 +264,8 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
       byte value = mixControllerData.midiValue;
       sendMidiCcMessage (channel, control, value);
 
-      //TODO: update LCD display
+      //update LCD display
+      lcdSetSliderValue (LCD_SLIDER_MIX_INDEX, mixControllerData.midiValue);
 
       mixControllerData.prevMidiValue = mixControllerData.midiValue;
 
@@ -353,7 +354,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
     {
       lcdToggleDisplayMode();
     }
-    
+
   } //if (enc == *lcdEncoders[LCD_ENC_CTRL])
 }
 

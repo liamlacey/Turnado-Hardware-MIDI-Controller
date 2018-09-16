@@ -87,13 +87,13 @@ void updateLcd()
         if (lcdSliderValue[i] != lcdPrevSliderValue[i])
         {
           //=========================================================================
-          //if one of the horizontal knob controller sliders
+          //if one of the vertical knob controller sliders
           if (i < LCD_SLIDER_DICTATOR_INDEX)
           {
             //if slider value has increased
             if (lcdSliderValue[i] > lcdPrevSliderValue[i])
             {
-              //increase the size of the slider by drawing the value difference on the top
+              //increase the 'value' of the slider by drawing the value difference on the top
               lcd.fillRect (i * LCD_KNOB_SLIDER_SPACING,
                             (lcd.height() - lcdSliderValue[i]) - (LCD_TEXT_LINE_SPACING + 2),
                             LCD_SLIDER_WIDTH,
@@ -103,7 +103,7 @@ void updateLcd()
             //if slider value has decreased
             else
             {
-              //decrease the size of the slider by 'clearing' the value difference from the top
+              //decrease the 'value' of the slider by 'clearing' the value difference from the top
               lcd.fillRect (i * LCD_KNOB_SLIDER_SPACING,
                             (lcd.height() - lcdPrevSliderValue[i]) - (LCD_TEXT_LINE_SPACING + 2),
                             LCD_SLIDER_WIDTH,
@@ -114,6 +114,42 @@ void updateLcd()
           } //if (i < LCD_SLIDER_DICTATOR_INDEX)
 
           //=========================================================================
+          //if one of the horizontal sliders
+          else
+          {
+            //FIXME: midiToPixelVal needs to be set to the below commented-out code, however
+            //as this is a fractional value the drawing of the slider isn't perfect 
+            //(leaves 'streaks' where pixels that need updating aren't being updated due to
+            //values being rounded when drawing). Need to find a solution around this.
+            //float midiToPixelVal = (lcd.width() - (LCD_KNOB_SLIDER_SPACING * 2)) / 127.0;
+            float midiToPixelVal = 2;
+
+            uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
+            
+            //if slider value has increased
+            if (lcdSliderValue[i] > lcdPrevSliderValue[i])
+            {
+              //increase the 'value' of the slider by drawing the value difference to the right
+              lcd.fillRect ((LCD_KNOB_SLIDER_SPACING * 2) + (lcdPrevSliderValue[i] * midiToPixelVal),
+                            sliderYPos,
+                            (lcdSliderValue[i] - lcdPrevSliderValue[i]) * midiToPixelVal,
+                            LCD_SLIDER_WIDTH,
+                            LCD_COLOUR_SLIDERS_VALUE);
+
+            }
+            //if slider value has decreased
+            else
+            {
+              //decrease the 'value' of the slider by 'clearing' the value difference to the left
+              lcd.fillRect ((LCD_KNOB_SLIDER_SPACING * 2) + (lcdSliderValue[i] * midiToPixelVal),
+                            sliderYPos,
+                            (lcdPrevSliderValue[i] - lcdSliderValue[i]) * midiToPixelVal,
+                            LCD_SLIDER_WIDTH,
+                            LCD_COLOUR_SLIDERS_BCKGND);
+
+            }
+
+          } //else (horizontal slider)
 
           //=========================================================================
 
