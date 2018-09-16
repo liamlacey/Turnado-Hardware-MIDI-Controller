@@ -32,6 +32,14 @@ struct KnobControllerData
 
 KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS];
 
+struct MixControllerData
+{
+  int16_t midiValue = 0;
+  uint8_t prevMidiValue = 0;
+};
+
+MixControllerData mixControllerData;
+
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
 void processEncoderSwitchChange (RotaryEncoder &enc);
@@ -158,7 +166,24 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     Serial.print ("Mix encoder: ");
     Serial.println (enc_value);
 #endif
-  }
+
+    mixControllerData.midiValue = constrain (mixControllerData.midiValue + enc_value, 0, 127);
+
+    if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
+    {
+      //send MIDI message
+      byte channel = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      byte control = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_CC_NUM].value;
+      byte value = mixControllerData.midiValue;
+      sendMidiCcMessage (channel, control, value);
+
+      //TODO: update LCD display
+
+      mixControllerData.prevMidiValue = mixControllerData.midiValue;
+
+    } //if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
+
+  } //if (enc == *mixEncoder)
 
   else if (enc == *lcdEncoders[LCD_ENC_CTRL])
   {
