@@ -76,7 +76,7 @@ class RotaryEncoder
     Bounce *switchDebouncer;
 
     bool switchEnabled = true;
-    const int DEBOUNCE_TIME = 5;
+    const int DEBOUNCE_TIME = 10;
     uint8_t switchState = 0;
 };
 

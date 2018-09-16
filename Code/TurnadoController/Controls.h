@@ -107,6 +107,8 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
     knobControllerData[index].combinedMidiValue = map (knobControllerData[index].relativeValue, 0, 127, knobControllerData[index].baseValue, 127);
   else if (knobControllerData[index].relativeValue < 0)
     knobControllerData[index].combinedMidiValue = map (knobControllerData[index].relativeValue, 0, -128, knobControllerData[index].baseValue, 0);
+  else
+    knobControllerData[index].combinedMidiValue = knobControllerData[index].baseValue;
 
   if (knobControllerData[index].combinedMidiValue != knobControllerData[index].prevCombinedMidiValue)
   {
@@ -205,6 +207,20 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
       Serial.println (enc.getSwitchState());
 #endif
     }
+
+    //if switch is being turned on
+    if (enc.getSwitchState() > 0)
+    {
+      //reset base value
+      knobControllerData[i].baseValue = 0;
+
+      if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+      {
+        setKnobControllerCombinedMidiValue(i);
+        knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+      }
+
+    } //if (enc.getSwitchState() > 0)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
