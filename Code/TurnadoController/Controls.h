@@ -40,6 +40,8 @@ struct MixControllerData
 
 MixControllerData mixControllerData;
 
+uint8_t randomiseButtonState = 0;
+
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
 void processEncoderSwitchChange (RotaryEncoder &enc);
@@ -287,7 +289,25 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.print ("Randomise Button: ");
     Serial.println (switchControl.getSwitchState());
 #endif
-  }
+
+    if (switchControl.getSwitchState() != randomiseButtonState)
+    {
+      //if a button release
+      if (switchControl.getSwitchState() == 0)
+      {
+        //send MIDI message
+        byte channel = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_MIDI_CHAN].value;
+        byte control = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_CC_NUM].value;
+        byte value = 127;
+        sendMidiCcMessage (channel, control, value);
+
+        randomiseButtonState = switchControl.getSwitchState();
+
+      } //if (switchControl.getSwitchState() == 0)
+
+    } //if (switchControl.getSwitchState() != randomiseButtonState)
+
+  } //else if (switchControl == *randomiseButton)
 }
 
 //=========================================================================
