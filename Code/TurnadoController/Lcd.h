@@ -122,9 +122,9 @@ void updateLcd()
           {
             //number of pixels for 1 MIDI value
             float midiToPixelVal = 2;
-            
+
             uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
-            
+
             //if slider value has increased
             if (lcdSliderValue[i] > lcdPrevSliderValue[i])
             {
@@ -205,40 +205,52 @@ void lcdDisplayControls()
   //draw the 8 knob controller values as vertical 'sliders' with numbers underneath at the bottom of the display
   for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
   {
+    //draw 'no value' section of the slider
     lcd.fillRect (i * LCD_VERT_SLIDER_SPACING,
                   (lcd.height() - LCD_VERT_SLIDER_LENGTH) - (LCD_TEXT_LINE_SPACING + 2),
                   LCD_SLIDER_WIDTH,
-                  LCD_VERT_SLIDER_LENGTH,
+                  LCD_VERT_SLIDER_LENGTH - lcdSliderValue[i],
                   LCD_COLOUR_SLIDERS_BCKGND);
+
+    //draw 'value' section of the slider
+    lcd.fillRect (i * LCD_VERT_SLIDER_SPACING,
+                  (lcd.height() - lcdSliderValue[i]) - (LCD_TEXT_LINE_SPACING + 2),
+                  LCD_SLIDER_WIDTH,
+                  lcdSliderValue[i],
+                  LCD_COLOUR_SLIDERS_VALUE);
 
     lcd.setCursor ((i * LCD_VERT_SLIDER_SPACING) + 5, lcd.height() - LCD_TEXT_LINE_SPACING);
     lcd.println (i + 1);
 
   } //for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
 
-  //draw the dictator mode value as a horizontal 'slider' above the knob controller sliders
-  //with the parameter name on the left-hand side.
+  //draw the dictator mode and mix values as horizontal 'sliders' above the knob controller sliders
+  //with the parameter names on the left-hand side.
 
   lcd.setCursor (0, LCD_DICT_SLIDER_Y_POS);
   lcd.println ("Dict:");
-
-  lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
-                LCD_DICT_SLIDER_Y_POS,
-                LCD_HORZ_SLIDER_LENGTH,
-                LCD_SLIDER_WIDTH,
-                LCD_COLOUR_SLIDERS_BCKGND);
-
-  //draw the mix value as a horizontal 'slider' above the dictator slider
-  //with the parameter name on the left-hand side.
-
   lcd.setCursor (0, LCD_MIX_SLIDER_Y_POS);
   lcd.println ("Mix:");
 
-  lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
-                LCD_MIX_SLIDER_Y_POS,
-                LCD_HORZ_SLIDER_LENGTH,
-                LCD_SLIDER_WIDTH,
-                LCD_COLOUR_SLIDERS_BCKGND);
+  for (uint8_t i = LCD_SLIDER_DICTATOR_INDEX; i < LCD_NUM_OF_SLIDERS; i++)
+  {
+    uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
+    
+    //draw 'no value' section of the slider
+    lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
+                  sliderYPos,
+                  lcdSliderValue[i] * 2,
+                  LCD_SLIDER_WIDTH,
+                  LCD_COLOUR_SLIDERS_VALUE);
+
+    //draw 'value' section of the slider
+    lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * 2),
+                  sliderYPos,
+                  LCD_HORZ_SLIDER_LENGTH - (lcdSliderValue[i] * 2),
+                  LCD_SLIDER_WIDTH,
+                  LCD_COLOUR_SLIDERS_BCKGND);
+                  
+  } //for (uint8_t i = LCD_SLIDER_DICTATOR_INDEX; i < LCD_NUM_OF_SLIDERS; i++)
 }
 
 //=========================================================================
