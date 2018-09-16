@@ -138,6 +138,8 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
   {
     //send MIDI message
     byte channel = settingsData[index + 1].paramData[PARAM_INDEX_MIDI_CHAN].value;
+    if (channel == 0)
+        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
     byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
     byte value = knobControllerData[index].combinedMidiValue;
     sendMidiCcMessage (channel, control, value);
@@ -162,6 +164,8 @@ void setCurrentMidiProgramNumber (int8_t incVal)
 
   //send MIDI message
   byte channel = settingsData[SETTINGS_PRESET].paramData[PARAM_INDEX_MIDI_CHAN].value;
+  if (channel == 0)
+        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
   sendMidiProgramChangeMessage (channel, currentMidiProgramNumber);
 
   //TODO: update LCD display (so top bar shows current MIDI program number)
@@ -260,6 +264,8 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     {
       //send MIDI message
       byte channel = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      if (channel == 0)
+        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
       byte control = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_CC_NUM].value;
       byte value = mixControllerData.midiValue;
       sendMidiCcMessage (channel, control, value);
@@ -402,6 +408,8 @@ void processPushButtonChange (SwitchControl &switchControl)
       {
         //send MIDI message
         byte channel = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_MIDI_CHAN].value;
+        if (channel == 0)
+          channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
         byte control = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_CC_NUM].value;
         byte value = 127;
         sendMidiCcMessage (channel, control, value);
