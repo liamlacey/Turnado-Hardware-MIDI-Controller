@@ -9,6 +9,7 @@
 //=========================================================================
 void ProcessMidiControlChange (byte channel, byte control, byte value);
 void sendMidiCcMessage (byte channel, byte control, byte value);
+void sendMidiProgramChangeMessage (byte channel, byte program);
 
 //=========================================================================
 //=========================================================================
@@ -16,7 +17,7 @@ void sendMidiCcMessage (byte channel, byte control, byte value);
 void setupMidiIO()
 {
 #ifndef DISABLE_USB_MIDI
-  usbMIDI.setHandleControlChange(ProcessMidiControlChange);
+  usbMIDI.setHandleControlChange (ProcessMidiControlChange);
 #endif
 }
 
@@ -53,6 +54,13 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
 //=========================================================================
 void sendMidiCcMessage (byte channel, byte control, byte value)
 {
-  usbMIDI.sendControlChange(control, value, channel);
+  usbMIDI.sendControlChange (control, value, channel);
 }
 
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void sendMidiProgramChangeMessage (byte channel, byte program)
+{
+  usbMIDI.sendProgramChange (program, channel);
+}

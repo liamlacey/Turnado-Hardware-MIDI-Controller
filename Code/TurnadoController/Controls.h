@@ -42,6 +42,10 @@ MixControllerData mixControllerData;
 
 uint8_t randomiseButtonState = 0;
 
+uint8_t presetUpButtonState = 0;
+uint8_t presetDownButtonState = 0;
+int16_t currentMidiProgramNumber = 0;
+
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
 void processEncoderSwitchChange (RotaryEncoder &enc);
@@ -80,6 +84,9 @@ void setupControls()
 
   randomiseButton = new SwitchControl (PIN_RANDOMISE_BUTTON);
   randomiseButton->onSwitchStateChange (processPushButtonChange);
+
+  //setupSettings() must be called before setupControls() for the below to be set correctly.
+  currentMidiProgramNumber = settingsData[SETTINGS_PRESET].paramData[PARAM_INDEX_START_NUM].value;
 }
 
 //=========================================================================
@@ -132,6 +139,24 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
 
     knobControllerData[index].prevCombinedMidiValue = knobControllerData[index].combinedMidiValue;
   }
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void setCurrentMidiProgramNumber (int8_t incVal)
+{
+  //Always send MIDI program change messages here,
+  //even if the new program number is the same as the previous one
+  //(so that we can 'reset' the current MIDI program).
+
+  currentMidiProgramNumber = constrain (currentMidiProgramNumber + incVal, 0, 127);
+
+  //send MIDI message
+  byte channel = settingsData[SETTINGS_PRESET].paramData[PARAM_INDEX_MIDI_CHAN].value;
+  sendMidiProgramChangeMessage (channel, currentMidiProgramNumber);
+
+  //TODO: update LCD display (so top bar shows current MIDI program number)
 }
 
 //=========================================================================
@@ -273,7 +298,18 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.print ("Preset Up Button: ");
     Serial.println (switchControl.getSwitchState());
 #endif
-  }
+
+    if (switchControl.getSwitchState() != presetUpButtonState)
+    {
+      //if a button release, increment MIDI program number
+      if (switchControl.getSwitchState() == 0)
+        setCurrentMidiProgramNumber (1);
+
+      presetUpButtonState = switchControl.getSwitchState();
+
+    } //if (switchControl.getSwitchState() == 0)
+
+  } //if (switchControl == *presetUpButton)
 
   else if (switchControl == *presetDownButton)
   {
@@ -281,7 +317,18 @@ void processPushButtonChange (SwitchControl &switchControl)
     Serial.print ("Preset Down Button: ");
     Serial.println (switchControl.getSwitchState());
 #endif
-  }
+
+    if (switchControl.getSwitchState() != presetDownButtonState)
+    {
+      //if a button release, decrement MIDI program number
+      if (switchControl.getSwitchState() == 0)
+        setCurrentMidiProgramNumber (-1);
+
+      presetDownButtonState = switchControl.getSwitchState();
+
+    } //if (switchControl.getSwitchState() == 0)
+
+  } //else if (switchControl == *presetDownButton)
 
   else if (switchControl == *randomiseButton)
   {
