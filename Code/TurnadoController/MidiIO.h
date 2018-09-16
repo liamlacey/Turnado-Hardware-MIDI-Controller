@@ -44,6 +44,8 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
   Serial.print (" ");
   Serial.println (value);
 #endif
+
+  //TODO: process MIDI-in from Turnado knobs, adjusting the internal knob controller MIDI values (and LCD display) accordingly.
 }
 
 //=========================================================================
