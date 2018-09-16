@@ -142,7 +142,8 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
     byte value = knobControllerData[index].combinedMidiValue;
     sendMidiCcMessage (channel, control, value);
 
-    //TODO: update LCD display
+    //update LCD display
+    lcdSetSliderValue (index, knobControllerData[index].combinedMidiValue);
 
     knobControllerData[index].prevCombinedMidiValue = knobControllerData[index].combinedMidiValue;
   }
