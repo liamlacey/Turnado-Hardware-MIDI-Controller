@@ -10,9 +10,6 @@
 RotaryEncoder* knobControllersEncoders[NUM_OF_KNOB_CONTROLLERS];
 ThumbJoystick* knobControllersJoysticks[NUM_OF_KNOB_CONTROLLERS];
 
-RotaryEncoder* dictatorEncoder;
-ThumbJoystick* dictatorJoystick;
-
 RotaryEncoder* mixEncoder;
 
 RotaryEncoder* lcdEncoders[NUM_OF_LCD_ENCS];
@@ -33,7 +30,7 @@ struct KnobControllerData
   uint8_t prevCombinedMidiValue = 0;
 };
 
-KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS + 1]; //+1 for dictator
+KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS];
 
 //=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
@@ -55,13 +52,6 @@ void setupControls()
     knobControllersJoysticks[i] = new ThumbJoystick (PINS_KNOB_CTRL_JOYSTICKS[i]);
     knobControllersJoysticks[i]->onJoystickChange (processJoystickChange);
   }
-
-  dictatorEncoder = new RotaryEncoder (PINS_DICTATOR_ENC.pinA, PINS_DICTATOR_ENC.pinB, PINS_DICTATOR_ENC.pinSwitch);
-  dictatorEncoder->onEncoderChange (processEncoderChange);
-  dictatorEncoder->onSwitchChange (processEncoderSwitchChange);
-
-  dictatorJoystick = new ThumbJoystick (PIN_DICTATOR_JOYSTICK);
-  dictatorJoystick->onJoystickChange (processJoystickChange);
 
   mixEncoder = new RotaryEncoder (PINS_MIX_ENC.pinA, PINS_MIX_ENC.pinB, PINS_MIX_ENC.pinSwitch);
   mixEncoder->onEncoderChange (processEncoderChange);
@@ -95,12 +85,6 @@ void updateControls()
     knobControllersJoysticks[i]->update();
 #endif
   }
-
-  dictatorEncoder->update();
-
-#ifndef DISABLE_JOYSTICKS
-  dictatorJoystick->update();
-#endif
 
   mixEncoder->update();
 
@@ -166,24 +150,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
-  if (enc == *dictatorEncoder)
-  {
-#ifdef DEBUG
-    Serial.print ("Dictator encoder: ");
-    Serial.println (enc_value);
-#endif
-
-    knobControllerData[8].baseValue = constrain (knobControllerData[8].baseValue + enc_value, 0, 127);
-
-    if (knobControllerData[8].baseValue != knobControllerData[8].prevBaseValue)
-    {
-      setKnobControllerCombinedMidiValue(8);
-      knobControllerData[8].prevBaseValue = knobControllerData[8].baseValue;
-    }
-
-  } //if (enc == *dictatorEncoder)
-
-  else if (enc == *mixEncoder)
+  if (enc == *mixEncoder)
   {
 #ifdef DEBUG
     Serial.print ("Mix encoder: ");
@@ -241,15 +208,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
-  if (enc == *dictatorEncoder)
-  {
-#ifdef DEBUG
-    Serial.print ("Dictator encoder switch: ");
-    Serial.println (enc.getSwitchState());
-#endif
-  }
-
-  else if (enc == *lcdEncoders[LCD_ENC_CTRL])
+  if (enc == *lcdEncoders[LCD_ENC_CTRL])
   {
 #ifdef DEBUG
     Serial.print ("LCD CTRL encoder swich: ");
@@ -319,23 +278,6 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
       } //if (thumbJoystick == *knobControllersJoysticks[i])
 
     } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
-
-    if (thumbJoystick == *dictatorJoystick)
-    {
-#ifdef DEBUG
-      Serial.print ("Dictator Joystick: ");
-      Serial.println (thumbJoystick.getYAxisValue());
-#endif
-
-      knobControllerData[8].relativeValue = thumbJoystick.getYAxisValue();
-
-      if (knobControllerData[8].relativeValue != knobControllerData[8].prevRelativeValue)
-      {
-        setKnobControllerCombinedMidiValue(8);
-        knobControllerData[8].prevRelativeValue = knobControllerData[8].relativeValue;
-      }
-
-    } // if (thumbJoystick == *dictatorJoystick)
 
   } //if (isYAxis)
 }

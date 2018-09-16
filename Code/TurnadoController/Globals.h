@@ -1,5 +1,6 @@
 
-#define NUM_OF_KNOB_CONTROLLERS 8
+#define NUM_OF_KNOB_CONTROLLERS 9 //Includes dictator mode controller
+#define DICTATOR_KNOB_CONTROLLER_INDEX 9
 
 enum LcdEncoderNames
 {

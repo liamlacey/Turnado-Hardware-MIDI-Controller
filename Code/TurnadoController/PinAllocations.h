@@ -16,13 +16,7 @@ const EncoderPins PINS_KNOB_CTRL_ENCS[NUM_OF_KNOB_CONTROLLERS] =
   {.pinA = 38, .pinB = 39, .pinSwitch = 14}, //6
   {.pinA = 15, .pinB = 16, .pinSwitch = 17}, //7
   {.pinA = 19, .pinB = 20, .pinSwitch = 21}, //8
-};
-
-const EncoderPins PINS_DICTATOR_ENC =
-{
-  .pinA = 31,
-  .pinB = 30,
-  .pinSwitch = 29
+  {.pinA = 31, .pinB = 30, .pinSwitch = 29}  //dictator
 };
 
 const EncoderPins PINS_MIX_ENC =
@@ -49,10 +43,9 @@ const uint8_t PINS_KNOB_CTRL_JOYSTICKS[NUM_OF_KNOB_CONTROLLERS] =
   A21, //5
   A22, //6
   A4,  //7
-  A8   //8
+  A8,  //8
+  A13, //dictator
 };
-
-const uint8_t PIN_DICTATOR_JOYSTICK = A13;
 
 const uint8_t PIN_PRESET_UP_BUTTON = 3;
 const uint8_t PIN_PRESET_DOWN_BUTTON = 2;
