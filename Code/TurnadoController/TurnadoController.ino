@@ -1,4 +1,7 @@
 //=========================================================================
+int16_t currentMidiProgramNumber = 0;
+
+//=========================================================================
 #include "Globals.h"
 #include "PinAllocations.h"
 #include "Settings.h"

@@ -29,8 +29,8 @@ const uint8_t LCD_SLIDER_WIDTH = 20;
 const uint8_t LCD_VERT_SLIDER_LENGTH = 127;
 const uint8_t LCD_HORZ_SLIDER_LENGTH = 254;
 const uint8_t LCD_VERT_SLIDER_SPACING = 43;
-const uint8_t LCD_DICT_SLIDER_Y_POS = 60;
-const uint8_t LCD_MIX_SLIDER_Y_POS = 25;
+const uint8_t LCD_DICT_SLIDER_Y_POS = 65;
+const uint8_t LCD_MIX_SLIDER_Y_POS = 35;
 
 const uint8_t LCD_NUM_OF_SLIDERS = 10;
 const uint8_t LCD_SLIDER_DICTATOR_INDEX = 8;
@@ -121,7 +121,7 @@ void updateLcd()
           else
           {
             //number of pixels for 1 MIDI value
-            float midiToPixelVal = 2;
+            float midiToPixelVal = LCD_HORZ_SLIDER_LENGTH / 127.0;
 
             uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
 
@@ -151,8 +151,10 @@ void updateLcd()
           } //else (horizontal slider)
 
           //=========================================================================
+          //TODO: update text in top bar if changed
 
           //=========================================================================
+
           lcdPrevSliderValue[i] = lcdSliderValue[i];
 
         } //if (lcdSliderValue[i] != lcdPrevSliderValue[i])
@@ -202,6 +204,7 @@ void lcdDisplayControls()
   lcd.setTextColor (LCD_COLOUR_TEXT);
   lcd.setTextSize (2);
 
+  //=========================================================================
   //draw the 8 knob controller values as vertical 'sliders' with numbers underneath at the bottom of the display
   for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
   {
@@ -224,6 +227,7 @@ void lcdDisplayControls()
 
   } //for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
 
+  //=========================================================================
   //draw the dictator mode and mix values as horizontal 'sliders' above the knob controller sliders
   //with the parameter names on the left-hand side.
 
@@ -232,25 +236,43 @@ void lcdDisplayControls()
   lcd.setCursor (0, LCD_MIX_SLIDER_Y_POS);
   lcd.println ("Mix:");
 
+  //number of pixels for 1 MIDI value
+  float midiToPixelVal = LCD_HORZ_SLIDER_LENGTH / 127.0;
+
   for (uint8_t i = LCD_SLIDER_DICTATOR_INDEX; i < LCD_NUM_OF_SLIDERS; i++)
   {
     uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
-    
+
     //draw 'no value' section of the slider
     lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
                   sliderYPos,
-                  lcdSliderValue[i] * 2,
+                  lcdSliderValue[i] * midiToPixelVal,
                   LCD_SLIDER_WIDTH,
                   LCD_COLOUR_SLIDERS_VALUE);
 
     //draw 'value' section of the slider
-    lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * 2),
+    lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * midiToPixelVal),
                   sliderYPos,
-                  LCD_HORZ_SLIDER_LENGTH - (lcdSliderValue[i] * 2),
+                  LCD_HORZ_SLIDER_LENGTH - (lcdSliderValue[i] * midiToPixelVal),
                   LCD_SLIDER_WIDTH,
                   LCD_COLOUR_SLIDERS_BCKGND);
-                  
+
   } //for (uint8_t i = LCD_SLIDER_DICTATOR_INDEX; i < LCD_NUM_OF_SLIDERS; i++)
+
+  //=========================================================================
+  //draw a bar at the top of the display with some settings data in it
+
+  lcd.fillRect (0, 0, lcd.width(), LCD_TEXT_LINE_SPACING, LCD_COLOUR_TEXT);
+
+  lcd.setTextColor (LCD_COLOUR_BCKGND);
+
+  lcd.setCursor (0, 0);
+  lcd.print ("Chan:");
+  lcd.print (settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value);
+
+  lcd.setCursor (lcd.width() - 85, 0);
+  lcd.print ("Prgm:");
+  lcd.print (currentMidiProgramNumber);
 }
 
 //=========================================================================

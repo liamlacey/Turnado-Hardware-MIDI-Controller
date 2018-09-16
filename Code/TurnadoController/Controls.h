@@ -42,7 +42,6 @@ MixControllerData mixControllerData;
 
 uint8_t randomiseButtonState = 0;
 
-int16_t currentMidiProgramNumber = 0;
 uint8_t presetUpButtonState = 0;
 uint8_t presetDownButtonState = 0;
 bool ignoreNextPresetButtonRelease = false;
