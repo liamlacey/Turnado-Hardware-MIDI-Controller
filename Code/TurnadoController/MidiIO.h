@@ -4,7 +4,11 @@
 //#define DISABLE_USB_MIDI 1
 
 //=========================================================================
+
+
+//=========================================================================
 void ProcessMidiControlChange (byte channel, byte control, byte value);
+void sendMidiCcMessage (byte channel, byte control, byte value);
 
 //=========================================================================
 //=========================================================================
@@ -41,3 +45,12 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
   Serial.println (value);
 #endif
 }
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void sendMidiCcMessage (byte channel, byte control, byte value)
+{
+  usbMIDI.sendControlChange(control, value, channel);
+}
+

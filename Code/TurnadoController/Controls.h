@@ -23,6 +23,19 @@ SwitchControl* presetDownButton;
 SwitchControl* randomiseButton;
 
 //=========================================================================
+struct KnobControllerData
+{
+  int16_t baseValue = 0;
+  uint8_t prevBaseValue = 0;
+  int16_t relativeValue = 0;
+  int8_t prevRelativeValue = 0;
+  int16_t combinedMidiValue = 0;
+  uint8_t prevCombinedMidiValue = 0;
+};
+
+KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS + 1]; //+1 for dictator
+
+//=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value);
 void processEncoderSwitchChange (RotaryEncoder &enc);
 void processPushButtonChange (SwitchControl &switchControl);
@@ -104,6 +117,30 @@ void updateControls()
 //=========================================================================
 //=========================================================================
 //=========================================================================
+void setKnobControllerCombinedMidiValue (uint8_t index)
+{
+  if (knobControllerData[index].relativeValue > 0)
+    knobControllerData[index].combinedMidiValue = map (knobControllerData[index].relativeValue, 0, 127, knobControllerData[index].baseValue, 127);
+  else if (knobControllerData[index].relativeValue < 0)
+    knobControllerData[index].combinedMidiValue = map (knobControllerData[index].relativeValue, 0, -128, knobControllerData[index].baseValue, 0);
+
+  if (knobControllerData[index].combinedMidiValue != knobControllerData[index].prevCombinedMidiValue)
+  {
+    //send MIDI message
+    byte channel = settingsData[index + 1].paramData[PARAM_INDEX_MIDI_CHAN].value;
+    byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
+    byte value = knobControllerData[index].combinedMidiValue;
+    sendMidiCcMessage (channel, control, value);
+
+    //TODO: update LCD display
+
+    knobControllerData[index].prevCombinedMidiValue = knobControllerData[index].combinedMidiValue;
+  }
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
 void processEncoderChange (RotaryEncoder &enc, int enc_value)
 {
   for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
@@ -116,7 +153,16 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
       Serial.print (" encoder: ");
       Serial.println (enc_value);
 #endif
-    }
+
+      knobControllerData[i].baseValue = constrain (knobControllerData[i].baseValue + enc_value, 0, 127);
+
+      if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+      {
+        setKnobControllerCombinedMidiValue(i);
+        knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+      }
+
+    } //if (enc == *knobControllersEncoders[i])
 
   } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
@@ -126,7 +172,16 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     Serial.print ("Dictator encoder: ");
     Serial.println (enc_value);
 #endif
-  }
+
+    knobControllerData[8].baseValue = constrain (knobControllerData[8].baseValue + enc_value, 0, 127);
+
+    if (knobControllerData[8].baseValue != knobControllerData[8].prevBaseValue)
+    {
+      setKnobControllerCombinedMidiValue(8);
+      knobControllerData[8].prevBaseValue = knobControllerData[8].baseValue;
+    }
+
+  } //if (enc == *dictatorEncoder)
 
   else if (enc == *mixEncoder)
   {
@@ -252,7 +307,16 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
         Serial.print (" joystick: ");
         Serial.println (thumbJoystick.getYAxisValue());
 #endif
-      }
+
+        knobControllerData[i].relativeValue = thumbJoystick.getYAxisValue();
+
+        if (knobControllerData[i].relativeValue != knobControllerData[i].prevRelativeValue)
+        {
+          setKnobControllerCombinedMidiValue(i);
+          knobControllerData[i].prevRelativeValue = knobControllerData[i].relativeValue;
+        }
+
+      } //if (thumbJoystick == *knobControllersJoysticks[i])
 
     } //for (auto i = 0; i < NUM_OF_KNOB_CONTROLLERS; i++)
 
@@ -262,7 +326,16 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
       Serial.print ("Dictator Joystick: ");
       Serial.println (thumbJoystick.getYAxisValue());
 #endif
-    }
+
+      knobControllerData[8].relativeValue = thumbJoystick.getYAxisValue();
+
+      if (knobControllerData[8].relativeValue != knobControllerData[8].prevRelativeValue)
+      {
+        setKnobControllerCombinedMidiValue(8);
+        knobControllerData[8].prevRelativeValue = knobControllerData[8].relativeValue;
+      }
+
+    } // if (thumbJoystick == *dictatorJoystick)
 
   } //if (isYAxis)
 }

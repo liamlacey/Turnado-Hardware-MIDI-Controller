@@ -2,9 +2,9 @@
 #include "Globals.h"
 #include "PinAllocations.h"
 #include "Settings.h"
+#include "MidiIO.h"
 #include "Lcd.h"
 #include "Controls.h"
-#include "MidiIO.h"
 
 //=========================================================================
 //=========================================================================
