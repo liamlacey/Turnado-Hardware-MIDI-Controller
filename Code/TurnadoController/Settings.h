@@ -54,7 +54,6 @@ struct SettingsCategoryData
   ParamData paramData[SETTINGS_MAX_NUM_PARAMS];
 };
 
-//TODO: make this a class instead???
 SettingsCategoryData settingsData[SETTINGS_NUM_OF_CATS] =
 {
   {
