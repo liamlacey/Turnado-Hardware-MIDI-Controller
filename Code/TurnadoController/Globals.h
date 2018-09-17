@@ -30,12 +30,16 @@ enum LcdDisplayModes
  * Randomise + preset button combination to change global MIDI channel
  * Update settings on top bar of controls display in realtime
  * Processing of MIDI-in CCs from Turnado's knobs.
+ * Trigger a save to EEPROM when switching away from menu display
  * Add a centre bar to LCD mix slider to show centre point.
  * Consider improving LCD display general layouts, colours, etc...
+ * Consider drawing menu display from 'update' function rather than on control changes
  * 
  * 
- * _Future version feature ideas:_
+ * _Future version feature and changes ideas:_
  * Allow internal presets of settings that can be changed with a button combination (LCD ctrl switch + preset buttons?). Display preset number in controls display top bar.
  * Improve knob controller (and dictator) sliders to show the difference between the base value and relative value. E.g Base value shown with a bar, relative value shown as slider value starting at bar position.
  * Implement global setting for auto switching LCD display with control messages
+ * Have a global settings option to set control settings to default settings
+ * Change LCD drawing code to use relative positions of the LCD size (as opposed to absolute values)
  */
