@@ -66,6 +66,12 @@ class RotaryEncoder
     */
     bool operator==(RotaryEncoder& b);
 
+    /** Sets whether encoder acceleration is enabled or not.
+
+        @param shouldEnable - The enable state
+    */
+    void enableAcceleration (bool shouldEnable);
+
     //=====================================================
   private:
 
@@ -74,6 +80,20 @@ class RotaryEncoder
 
     Encoder *encoder;
     Bounce *switchDebouncer;
+
+    //Encoder acceleration variables.
+    //Line slope acceleration code from https://forum.pjrc.com/threads/48783-Encoder-Acceleration-help?p=165155&viewfull=1#post165155
+    unsigned long prevTime = 0;
+    unsigned long revolutionTime = 0;
+    unsigned long currentTime = 0;
+    const int c = 4; //height
+    const float a = 0.3; //slope
+    const uint8_t revTimeThreshold = 27;
+    //y=ax+c line
+    int rev = 0;
+    int b = 0;
+
+    bool accelerationEnabled = true;
 
     bool switchEnabled = true;
     const int DEBOUNCE_TIME = 10;

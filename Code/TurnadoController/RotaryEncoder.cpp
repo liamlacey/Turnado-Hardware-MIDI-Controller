@@ -26,16 +26,34 @@ RotaryEncoder::~RotaryEncoder()
 void RotaryEncoder::update()
 {
   //Check for encoder turn
-  //TODO: implement encoder acceleration
 
   int env_val = encoder->read();
 
+  //If there is an encoder value change
   if (env_val >= 4 || env_val <= - 4)
   {
+    if (accelerationEnabled)
+    {
+      //get time interval between this change and previous change
+      currentTime = millis();
+      revolutionTime = currentTime - prevTime;
+      prevTime = currentTime;
+
+      // trigger acceleration only when encoder speed is sufficiently high (small time value)
+      if (revolutionTime < revTimeThreshold)
+      {
+        rev = revTimeThreshold - revolutionTime;
+        b = (int)a * rev + c; //slope of a line equation
+        env_val = env_val * b; //apply acceleration
+      }
+      
+    } //if (enableAcceleration)
+
     env_val /= 4;
     this->handle_encoder_change (*this, env_val);
     encoder->write(0);
-  }
+    
+  } //if (env_val >= 4 || env_val <= - 4)
 
   if (switchEnabled)
   {
@@ -52,9 +70,9 @@ void RotaryEncoder::update()
       switchState = 1;
       this->handle_switch_change (*this);
     }
-    
+
   }//if (switchEnabled)
-  
+
 }
 
 uint8_t RotaryEncoder::getSwitchState()
@@ -76,3 +94,9 @@ bool RotaryEncoder::operator==(RotaryEncoder& b)
 {
   return (this == &b);
 }
+
+void RotaryEncoder::enableAcceleration (bool shouldEnable)
+{
+  accelerationEnabled = shouldEnable;
+}
+

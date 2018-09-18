@@ -185,7 +185,7 @@ void settingsClearEeprom();
 void setupSettings()
 {
   //TODO: set param default values in settingsData
-
+  
   settingsLoadAllFromEeprom();
 }
 
