@@ -178,6 +178,7 @@ long updateEepromTime = 0;
 //=========================================================================
 void settingsLoadAllFromEeprom();
 void settingsClearEeprom();
+void settingsSaveToEeprom (bool deltaSave);
 
 //=========================================================================
 //=========================================================================
@@ -185,7 +186,7 @@ void settingsClearEeprom();
 void setupSettings()
 {
   //TODO: set param default values in settingsData
-  
+
   settingsLoadAllFromEeprom();
 }
 
@@ -196,44 +197,50 @@ void settingsUpdateEeprom()
 {
   //Only save settings to EEPROM at certain time intervals (rather than directly after each value change)
   //to prevent the number of writes to EEPROM (which there is a limited number of)
-
   if ((millis() - updateEepromTime) > 5000)
   {
-    for (auto cat = 0; cat < SETTINGS_NUM_OF_CATS; cat++)
-    {
-      for (auto param = 0; param < settingsData[cat].numOfParams; param++)
-      {
-        //if the param value needs saving (it has recently changed)
-        if (settingsData[cat].paramData[param].needsSavingToEeprom)
-        {
-          //Write the param value to EEPROM
-          EEPROM.write ((cat * SETTINGS_MAX_NUM_PARAMS) + param, settingsData[cat].paramData[param].value);
-
-#ifdef DEBUG
-          Serial.print ("Writing to EEPROM: ");
-          Serial.print (settingsData[cat].name);
-          Serial.print (" ");
-          Serial.print (settingsData[cat].paramData[param].name);
-          Serial.print (" ");
-          Serial.print (settingsData[cat].paramData[param].value);
-          Serial.print (" (Address ");
-          Serial.print ((cat * SETTINGS_MAX_NUM_PARAMS) + param);
-          Serial.println (")");
-#endif
-
-          //flag that the param value has been saved
-          settingsData[cat].paramData[param].needsSavingToEeprom = false;
-
-        } //if (settingsData[cat].paramData[param].needsSavingToEeprom)
-
-      } //for (auto param = 0; param < settingsData[cat].numOfParams; param++)
-
-    } //for (auto cat = 0; cat < SETTINGS_NUM_OF_CATS; cat++)
-
+    settingsSaveToEeprom (true);
     updateEepromTime = millis();
 
   } //if ((millis() - updateEepromTime) > 5000)
 
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void settingsSaveToEeprom (bool deltaSave)
+{
+  for (auto cat = 0; cat < SETTINGS_NUM_OF_CATS; cat++)
+  {
+    for (auto param = 0; param < settingsData[cat].numOfParams; param++)
+    {
+      //if the param value needs saving (it has recently changed), or we want to do a full save
+      if (settingsData[cat].paramData[param].needsSavingToEeprom || !deltaSave)
+      {
+        //Write the param value to EEPROM
+        EEPROM.write ((cat * SETTINGS_MAX_NUM_PARAMS) + param, settingsData[cat].paramData[param].value);
+
+#ifdef DEBUG
+        Serial.print ("Writing to EEPROM: ");
+        Serial.print (settingsData[cat].name);
+        Serial.print (" ");
+        Serial.print (settingsData[cat].paramData[param].name);
+        Serial.print (" ");
+        Serial.print (settingsData[cat].paramData[param].value);
+        Serial.print (" (Address ");
+        Serial.print ((cat * SETTINGS_MAX_NUM_PARAMS) + param);
+        Serial.println (")");
+#endif
+
+        //flag that the param value has been saved
+        settingsData[cat].paramData[param].needsSavingToEeprom = false;
+
+      } //if (settingsData[cat].paramData[param].needsSavingToEeprom || !deltaSave)
+
+    } //for (auto param = 0; param < settingsData[cat].numOfParams; param++)
+
+  } //for (auto cat = 0; cat < SETTINGS_NUM_OF_CATS; cat++)
 }
 
 //=========================================================================

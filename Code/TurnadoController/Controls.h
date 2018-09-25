@@ -359,7 +359,14 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
     if (enc.getSwitchState() > 0)
     {
       lcdToggleDisplayMode();
-    }
+
+      //if switching away from menu display, do a delta save of settings
+      if (lcdDisplayMode == LCD_DISPLAY_MODE_CONTROLS)
+      {
+        settingsSaveToEeprom (true);
+      }
+
+    } //if (enc.getSwitchState() > 0)
 
   } //if (enc == *lcdEncoders[LCD_ENC_CTRL])
 }
