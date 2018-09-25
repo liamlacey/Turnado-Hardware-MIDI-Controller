@@ -26,11 +26,9 @@ enum LcdDisplayModes
  * _TODO:_
  * Test all untested code / features
  * Comment / document code
- * Implement rotary encoder acceleration in class, allow it to be turned off (LCD ctrl and param encoders maybe shouldn't use it)
  * Randomise + preset button combination to change global MIDI channel
  * Update settings on top bar of controls display in realtime
  * Processing of MIDI-in CCs from Turnado's knobs.
- * Trigger a save to EEPROM when switching away from menu display
  * Add a centre bar to LCD mix slider to show centre point.
  * Consider improving LCD display general layouts, colours, etc...
  * Consider drawing menu display from 'update' function rather than on control changes
