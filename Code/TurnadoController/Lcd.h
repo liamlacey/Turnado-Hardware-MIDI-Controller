@@ -250,6 +250,20 @@ void lcdDisplayControls()
                   LCD_SLIDER_WIDTH,
                   LCD_COLOUR_SLIDERS_VALUE);
 
+    //Draw central point line on the mix slider
+    if (i == LCD_SLIDER_MIX_INDEX)
+    {
+      uint8_t lineThickness = 4;
+      uint8_t lineUnipolarExtraLength = 3; //by how much the line extends above/below the slider
+
+      lcd.fillRect (lcd.width() - ((LCD_HORZ_SLIDER_LENGTH / 2.0) + (lineThickness / 2.0)),
+                    sliderYPos - lineUnipolarExtraLength,
+                    lineThickness,
+                    LCD_SLIDER_WIDTH + lineUnipolarExtraLength,
+                    LCD_COLOUR_SLIDERS_BCKGND);
+
+    } //if ( i == LCD_SLIDER_MIX_INDEX)
+
     //draw 'value' section of the slider
     lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * midiToPixelVal),
                   sliderYPos,

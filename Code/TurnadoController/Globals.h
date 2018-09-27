@@ -28,7 +28,6 @@ enum LcdDisplayModes
  * Comment / document code
  * Update settings on top bar of controls display in realtime
  * Processing of MIDI-in CCs from Turnado's knobs.
- * Add a centre bar to LCD mix slider to show centre point.
  * Consider improving LCD display general layouts, colours, etc...
  * Consider drawing menu display from 'update' function rather than on control changes
  * 
