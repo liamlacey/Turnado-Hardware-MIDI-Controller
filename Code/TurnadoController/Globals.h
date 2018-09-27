@@ -26,7 +26,6 @@ enum LcdDisplayModes
  * _TODO:_
  * Test all untested code / features
  * Comment / document code
- * Randomise + preset button combination to change global MIDI channel
  * Update settings on top bar of controls display in realtime
  * Processing of MIDI-in CCs from Turnado's knobs.
  * Add a centre bar to LCD mix slider to show centre point.

@@ -41,6 +41,7 @@ struct MixControllerData
 MixControllerData mixControllerData;
 
 uint8_t randomiseButtonState = 0;
+bool ignoreNextRandomiseButtonRelease = false;
 
 uint8_t presetUpButtonState = 0;
 uint8_t presetDownButtonState = 0;
@@ -57,6 +58,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value);
 void processEncoderSwitchChange (RotaryEncoder &enc);
 void processPushButtonChange (SwitchControl &switchControl);
 void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis);
+void setGlobalMidiChannel (int8_t incVal);
 
 //=========================================================================
 //=========================================================================
@@ -173,6 +175,24 @@ void setCurrentMidiProgramNumber (int8_t incVal)
 //=========================================================================
 //=========================================================================
 //=========================================================================
+void setGlobalMidiChannel (int8_t incVal)
+{
+  uint8_t prevChan = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+  uint8_t newChan = constrain (prevChan + incVal, 1, 16);
+
+  if (prevChan != newChan)
+  {
+    settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value = newChan;
+    settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].needsSavingToEeprom = true;
+
+    //TODO: update LCD display (so top bar shows current MIDI program number)
+
+  } //if (prevChan != newChan)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
 uint8_t handlePresetButtonInteraction (uint8_t buttonType, uint8_t newButtonState)
 {
   uint8_t thisButtonTypeState;
@@ -194,17 +214,33 @@ uint8_t handlePresetButtonInteraction (uint8_t buttonType, uint8_t newButtonStat
     //if a button release and we don't want to ignore it
     if (newButtonState == 0 && !ignoreNextPresetButtonRelease)
     {
-      //if preset up button release while preset down button isn't held, increment MIDI program number
-      if (buttonType == PRESET_BUTTON_TYPE_UP && otherButtonTypeState == 0)
-        setCurrentMidiProgramNumber (1);
-      //if preset down button release while preset up button isn't held, decrement MIDI program number
-      if (buttonType == PRESET_BUTTON_TYPE_DOWN && otherButtonTypeState == 0)
-        setCurrentMidiProgramNumber (-1);
-      //if other preset button is being held, resend current MIDI program number and flag to ignore next button release
-      else if (otherButtonTypeState > 0)
+      //if randomise button is not being held down
+      if (randomiseButtonState == 0)
       {
-        setCurrentMidiProgramNumber (0);
-        ignoreNextPresetButtonRelease = true;
+        //if preset up button release while preset down button isn't held, increment MIDI program number
+        if (buttonType == PRESET_BUTTON_TYPE_UP && otherButtonTypeState == 0)
+          setCurrentMidiProgramNumber (1);
+        //if preset down button release while preset up button isn't held, decrement MIDI program number
+        if (buttonType == PRESET_BUTTON_TYPE_DOWN && otherButtonTypeState == 0)
+          setCurrentMidiProgramNumber (-1);
+        //if other preset button is being held, resend current MIDI program number and flag to ignore next button release
+        else if (otherButtonTypeState > 0)
+        {
+          setCurrentMidiProgramNumber (0);
+          ignoreNextPresetButtonRelease = true;
+        }
+
+      } //if (randomiseButtonState == 0)
+
+      //if randomise button is being held down
+      else
+      {
+        if (buttonType == PRESET_BUTTON_TYPE_UP)
+          setGlobalMidiChannel (1);
+        else if (buttonType == PRESET_BUTTON_TYPE_DOWN)
+          setGlobalMidiChannel (-1);
+
+        ignoreNextRandomiseButtonRelease = true;
       }
 
     } //if (newButtonState == 0 && !ignoreNextPresetButtonRelease)
@@ -410,8 +446,8 @@ void processPushButtonChange (SwitchControl &switchControl)
 
     if (switchControl.getSwitchState() != randomiseButtonState)
     {
-      //if a button release
-      if (switchControl.getSwitchState() == 0)
+      //if a button release that we don't want to ignore
+      if (switchControl.getSwitchState() == 0 && !ignoreNextRandomiseButtonRelease)
       {
         //send MIDI message
         byte channel = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_MIDI_CHAN].value;
@@ -421,9 +457,10 @@ void processPushButtonChange (SwitchControl &switchControl)
         byte value = 127;
         sendMidiCcMessage (channel, control, value);
 
-        randomiseButtonState = switchControl.getSwitchState();
+      } //if (switchControl.getSwitchState() == 0 && !ignoreNextRandomiseButtonRelease)
 
-      } //if (switchControl.getSwitchState() == 0)
+      randomiseButtonState = switchControl.getSwitchState();
+      ignoreNextRandomiseButtonRelease = false;
 
     } //if (switchControl.getSwitchState() != randomiseButtonState)
 
