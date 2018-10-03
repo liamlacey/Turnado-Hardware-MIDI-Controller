@@ -8,29 +8,29 @@ struct EncoderPins
 
 const EncoderPins PINS_KNOB_CTRL_ENCS[NUM_OF_KNOB_CONTROLLERS] =
 {
-  {.pinA = 53, .pinB = 40, .pinSwitch = 52}, //1
-  {.pinA = 41, .pinB = 51, .pinSwitch = 42}, //2
-  {.pinA = 43, .pinB = 44, .pinSwitch = 48}, //3
-  {.pinA = 45, .pinB = 47, .pinSwitch = 46}, //4
-  {.pinA = 35, .pinB = 36, .pinSwitch = 37}, //5
-  {.pinA = 38, .pinB = 39, .pinSwitch = 14}, //6
-  {.pinA = 15, .pinB = 16, .pinSwitch = 17}, //7
-  {.pinA = 19, .pinB = 20, .pinSwitch = 21}, //8
-  {.pinA = 31, .pinB = 30, .pinSwitch = 29}  //dictator
+  {.pinA = 40, .pinB = 53, .pinSwitch = 52}, //1
+  {.pinA = 51, .pinB = 41, .pinSwitch = 42}, //2
+  {.pinA = 44, .pinB = 43, .pinSwitch = 48}, //3
+  {.pinA = 47, .pinB = 45, .pinSwitch = 46}, //4
+  {.pinA = 36, .pinB = 35, .pinSwitch = 37}, //5
+  {.pinA = 39, .pinB = 38, .pinSwitch = 14}, //6
+  {.pinA = 16, .pinB = 15, .pinSwitch = 17}, //7
+  {.pinA = 20, .pinB = 19, .pinSwitch = 21}, //8
+  {.pinA = 30, .pinB = 31, .pinSwitch = 29}  //dictator
 };
 
 const EncoderPins PINS_MIX_ENC =
 {
-  .pinA = 28,
-  .pinB = 27,
+  .pinA = 27,
+  .pinB = 28,
   .pinSwitch = -1
 };
 
 const EncoderPins PINS_LCD_ENCS[NUM_OF_LCD_ENCS] =
 {
-  {.pinA = 26, .pinB = 25, .pinSwitch = 24},  //Control
-  {.pinA = 8, .pinB = 7, .pinSwitch = -1},    //Paramater
-  {.pinA = 6, .pinB = 5, .pinSwitch = -1},    //Value
+  {.pinA = 25, .pinB = 26, .pinSwitch = 24},  //Control
+  {.pinA = 7, .pinB = 8, .pinSwitch = -1},    //Paramater
+  {.pinA = 5, .pinB = 6, .pinSwitch = -1},    //Value
 
 };
 
