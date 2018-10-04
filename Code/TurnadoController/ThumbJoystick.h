@@ -44,10 +44,10 @@ class ThumbJoystick
     //Joystick hysteresis value.
     //Used to prevent the analogue values bouncing, but reduces resolution.
     //This could also be considered as a 'sensitivity' value.
-    const int JS_Y_HYSTERESIS_VAL = 3;
+    const int JS_Y_HYSTERESIS_VAL = 4;
     //Joystick centre plateau value.
     //Increase to add more dead space around the centre if joystick isn't centring.
-    const int JS_CENTRE_PLATEAU_VAL = 10;
+    const int JS_CENTRE_PLATEAU_VAL = 30;
     //Joystick edge plateau value.
     //Increase to add more dead space at the edge if joystick isn't reaching end values.
     const int JS_EDGE_PLATEAU_VAL = 0;

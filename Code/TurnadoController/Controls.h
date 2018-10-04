@@ -4,7 +4,7 @@
 
 //=========================================================================
 //DEV STUFF...
-#define DISABLE_JOYSTICKS 1
+//#define DISABLE_JOYSTICKS 1
 
 //=========================================================================
 RotaryEncoder* knobControllersEncoders[NUM_OF_KNOB_CONTROLLERS];
