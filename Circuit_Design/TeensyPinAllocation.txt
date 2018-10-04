@@ -1,0 +1,66 @@
+0 / RX1 	- UNUSED (keep spare for MIDI)
+1 / TX1  	- UNUSED (keep spare for MIDI)
+2 		- Preset down button
+3 		- Preset up button
+4 		- Randomise button
+5 		- LCD enc 3 A
+6 		- LCD enc 3 B
+7 		- LCD enc 2 A
+8 		- LCD enc 2 B
+9 		- LCD D/C
+10 / CS0 	- LCD CS
+11 / MOSI0 	- LCD DSI/MOSI
+12 / MISO0 	- LCD SDO/MISO
+13 / SCK0 	- LCD SCK
+14 / A0 	- Enc 6 switch
+15 / A1 	- Enc 7 B
+16 / A2 	- Enc 7 A
+17 / A3 	- Enc 7 switch
+18 / A4 	- JS 7
+19 / A5 	- Enc 8 B
+20 / A6 	- Enc 8 A
+21 / A7 	- Enc 8 switch
+22 / A8 	- JS 8
+23 / A9 	- UNUSED 
+24 		- LCD enc 1 switch
+25 		- LCD enc 1 A 
+26 		- LCD enc 1 B
+27 		- Mix enc A
+28 		- Mix enc B
+29 		- Dictator enc switch
+30 		- Dictator enc A
+31 / A12 	- Dictator enc B
+32 / A13 	- Dictator JS
+33 / A14 	- JS 3
+34 / A15 	- JS 4
+35 / A16 	- Enc 5 B
+36 / A17 	- Enc 5 A
+37 / A18 	- Enc 5 switch
+38 / A19 	- Enc 6 B
+39 / A20 	- Enc 6 A
+A21 		- JS 5
+A22 		- JS 6
+
+Inner row through-hole pins:
+A10 		- UNUSED
+A11 		- UNUSED
+
+Surface mount pins:
+40 		- Enc 1 A
+41 		- Enc 2 B
+42 		- Enc 2 switch
+43 		- Enc 3 B
+44 		- Enc 3 A
+45 		- Enc 4 B
+46 		- Enc 4 switch
+47 		- Enc 4 A
+48 		- Enc 3 switch
+49 / A23 	- JS 2
+50 / A24 	- JS 1
+51 		- Enc 2 A
+52 		- Enc 1 switch
+53 		- Enc 1 B
+54 		- UNUSED
+55 		- UNUSED
+56 		- UNUSED
+57 		- UNUSED
