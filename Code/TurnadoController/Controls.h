@@ -34,8 +34,8 @@ KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS];
 
 struct MixControllerData
 {
-  int16_t midiValue = 0;
-  uint8_t prevMidiValue = 0;
+  int16_t midiValue = 127;
+  uint8_t prevMidiValue = 127;
 };
 
 MixControllerData mixControllerData;
@@ -77,6 +77,7 @@ void setupControls()
 
   mixEncoder = new RotaryEncoder (PINS_MIX_ENC.pinA, PINS_MIX_ENC.pinB, PINS_MIX_ENC.pinSwitch);
   mixEncoder->onEncoderChange (processEncoderChange);
+  lcdSetSliderValue (LCD_SLIDER_MIX_INDEX, mixControllerData.midiValue);
 
   for (auto i = 0; i < NUM_OF_LCD_ENCS; i++)
   {
