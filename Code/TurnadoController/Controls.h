@@ -147,14 +147,14 @@ void setKnobControllerCombinedMidiValue (uint8_t index, bool sendToMidiOut)
       byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
       byte value = knobControllerData[index].combinedMidiValue;
       sendMidiCcMessage (channel, control, value, index);
-      
+
     } //if (sendToMidiOut)
 
     //update LCD display
     lcdSetSliderValue (index, knobControllerData[index].combinedMidiValue);
 
     knobControllerData[index].prevCombinedMidiValue = knobControllerData[index].combinedMidiValue;
-    
+
   } //if (knobControllerData[index].combinedMidiValue != knobControllerData[index].prevCombinedMidiValue)
 }
 
@@ -163,13 +163,13 @@ void setKnobControllerCombinedMidiValue (uint8_t index, bool sendToMidiOut)
 //=========================================================================
 void setKnobControllerBaseValue (uint8_t index, uint8_t value, bool sendToMidiOut)
 {
-       knobControllerData[index].baseValue = value;
+  knobControllerData[index].baseValue = value;
 
-      if (knobControllerData[index].baseValue != knobControllerData[index].prevBaseValue)
-      {
-        setKnobControllerCombinedMidiValue (index, sendToMidiOut);
-        knobControllerData[index].prevBaseValue = knobControllerData[index].baseValue;
-      }
+  if (knobControllerData[index].baseValue != knobControllerData[index].prevBaseValue)
+  {
+    setKnobControllerCombinedMidiValue (index, sendToMidiOut);
+    knobControllerData[index].prevBaseValue = knobControllerData[index].baseValue;
+  }
 }
 
 //=========================================================================
