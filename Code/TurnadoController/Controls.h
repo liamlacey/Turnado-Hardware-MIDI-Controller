@@ -468,8 +468,11 @@ void processPushButtonChange (SwitchControl &switchControl)
         if (channel == 0)
           channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
         byte control = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_CC_NUM].value;
-        byte value = 127;
-        sendMidiCcMessage (channel, control, value, -1);
+
+        //The Turnado randomise button needs a CC value change to trigger it (sending the same CC value won't do anything).
+        //Therefore need to send two CC's here each with a different value.
+        sendMidiCcMessage (channel, control, 127, -1);
+        sendMidiCcMessage (channel, control, 0, -1);
 
       } //if (switchControl.getSwitchState() == 0 && !ignoreNextRandomiseButtonRelease)
 
