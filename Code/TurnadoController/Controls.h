@@ -127,7 +127,7 @@ void updateControls()
 //=========================================================================
 //=========================================================================
 //=========================================================================
-void setKnobControllerCombinedMidiValue (uint8_t index)
+void setKnobControllerCombinedMidiValue (uint8_t index, bool sendToMidiOut)
 {
   if (knobControllerData[index].relativeValue > 0)
     knobControllerData[index].combinedMidiValue = map (knobControllerData[index].relativeValue, 0, 127, knobControllerData[index].baseValue, 127);
@@ -138,19 +138,38 @@ void setKnobControllerCombinedMidiValue (uint8_t index)
 
   if (knobControllerData[index].combinedMidiValue != knobControllerData[index].prevCombinedMidiValue)
   {
-    //send MIDI message
-    byte channel = settingsData[index + 1].paramData[PARAM_INDEX_MIDI_CHAN].value;
-    if (channel == 0)
-      channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
-    byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
-    byte value = knobControllerData[index].combinedMidiValue;
-    sendMidiCcMessage (channel, control, value);
+    if (sendToMidiOut)
+    {
+      //send MIDI message
+      byte channel = settingsData[index + 1].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      if (channel == 0)
+        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      byte control = settingsData[index + 1].paramData[PARAM_INDEX_CC_NUM].value;
+      byte value = knobControllerData[index].combinedMidiValue;
+      sendMidiCcMessage (channel, control, value, index);
+      
+    } //if (sendToMidiOut)
 
     //update LCD display
     lcdSetSliderValue (index, knobControllerData[index].combinedMidiValue);
 
     knobControllerData[index].prevCombinedMidiValue = knobControllerData[index].combinedMidiValue;
-  }
+    
+  } //if (knobControllerData[index].combinedMidiValue != knobControllerData[index].prevCombinedMidiValue)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
+void setKnobControllerBaseValue (uint8_t index, uint8_t value, bool sendToMidiOut)
+{
+       knobControllerData[index].baseValue = value;
+
+      if (knobControllerData[index].baseValue != knobControllerData[index].prevBaseValue)
+      {
+        setKnobControllerCombinedMidiValue (index, sendToMidiOut);
+        knobControllerData[index].prevBaseValue = knobControllerData[index].baseValue;
+      }
 }
 
 //=========================================================================
@@ -274,13 +293,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
       Serial.println (enc_value);
 #endif
 
-      knobControllerData[i].baseValue = constrain (knobControllerData[i].baseValue + enc_value, 0, 127);
-
-      if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
-      {
-        setKnobControllerCombinedMidiValue(i);
-        knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
-      }
+      setKnobControllerBaseValue (i, constrain (knobControllerData[i].baseValue + enc_value, 0, 127), true);
 
     } //if (enc == *knobControllersEncoders[i])
 
@@ -304,7 +317,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
         channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
       byte control = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_CC_NUM].value;
       byte value = mixControllerData.midiValue;
-      sendMidiCcMessage (channel, control, value);
+      sendMidiCcMessage (channel, control, value, -1);
 
       //update LCD display
       lcdSetSliderValue (LCD_SLIDER_MIX_INDEX, mixControllerData.midiValue);
@@ -374,7 +387,7 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
 
         if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
         {
-          setKnobControllerCombinedMidiValue(i);
+          setKnobControllerCombinedMidiValue (i, true);
           knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
         }
 
@@ -456,7 +469,7 @@ void processPushButtonChange (SwitchControl &switchControl)
           channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
         byte control = settingsData[SETTINGS_RANDOMISE].paramData[PARAM_INDEX_CC_NUM].value;
         byte value = 127;
-        sendMidiCcMessage (channel, control, value);
+        sendMidiCcMessage (channel, control, value, -1);
 
       } //if (switchControl.getSwitchState() == 0 && !ignoreNextRandomiseButtonRelease)
 
@@ -491,7 +504,7 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
 
         if (knobControllerData[i].relativeValue != knobControllerData[i].prevRelativeValue)
         {
-          setKnobControllerCombinedMidiValue(i);
+          setKnobControllerCombinedMidiValue (i, true);
           knobControllerData[i].prevRelativeValue = knobControllerData[i].relativeValue;
         }
 
