@@ -39,28 +39,30 @@ void updateMidiIO()
 //=========================================================================
 void ProcessMidiControlChange (byte channel, byte control, byte value)
 {
-  //if recieved a Turnado Knob CC (CC1-8) within a certain time frame since
-  //this controller sent out a CC to control the same knob, assume it is
-  //the looped back MIDI CC and ignore it.
-  if ((control >= 1 && control <= 8) &&
-      (millis() - prevKnobControllerMidiSendTime[control - 1] < MIDI_CC_LOOPBACK_TIMEOUT))
-    return;
-
-#ifdef DEBUG
-  Serial.print ("MIDI-in CC: ");
-  Serial.print (channel);
-  Serial.print (" ");
-  Serial.print (control);
-  Serial.print (" ");
-  Serial.println (value);
-#endif
-
+  //If a Turnado knob CC (the only MIDI-in CCs we care about)
   if (control >= 1 && control <= 8)
   {
-    setKnobControllerBaseValue (control - 1, value, false);
-  }
+    //if received outside of a certain time frame since this controller sent out a CC to control the same knob,
+    //assume it isn't a looped back MIDI CC (that we want to ignore) and process it.
+    if (millis() - prevKnobControllerMidiSendTime[control - 1] > MIDI_CC_LOOPBACK_TIMEOUT)
+    {
 
-  //TODO: process MIDI-in from Turnado knobs, adjusting the internal knob controller MIDI values (and LCD display) accordingly.
+#ifdef DEBUG
+      Serial.print ("MIDI-in CC: ");
+      Serial.print (channel);
+      Serial.print (" ");
+      Serial.print (control);
+      Serial.print (" ");
+      Serial.println (value);
+#endif
+
+      //set knob controller base value only
+      setKnobControllerBaseValue (control - 1, value, false);
+
+    } //if (millis() - prevKnobControllerMidiSendTime[control - 1] > MIDI_CC_LOOPBACK_TIMEOUT)
+
+  } //if (control >= 1 && control <= 8)
+
 }
 
 //=========================================================================
