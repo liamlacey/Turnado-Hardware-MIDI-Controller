@@ -134,7 +134,6 @@ void updateLcd()
                             (lcdSliderValue[i] - lcdPrevSliderValue[i]) * midiToPixelVal,
                             LCD_SLIDER_WIDTH,
                             LCD_COLOUR_SLIDERS_VALUE);
-
             }
             //if slider value has decreased
             else
@@ -145,7 +144,6 @@ void updateLcd()
                             (lcdPrevSliderValue[i] - lcdSliderValue[i]) * midiToPixelVal,
                             LCD_SLIDER_WIDTH,
                             LCD_COLOUR_SLIDERS_BCKGND);
-
             }
 
           } //else (horizontal slider)
@@ -244,32 +242,32 @@ void lcdDisplayControls()
     uint8_t sliderYPos = (i == LCD_SLIDER_DICTATOR_INDEX) ? LCD_DICT_SLIDER_Y_POS : LCD_MIX_SLIDER_Y_POS;
 
     //draw 'no value' section of the slider
-    lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
-                  sliderYPos,
-                  lcdSliderValue[i] * midiToPixelVal,
-                  LCD_SLIDER_WIDTH,
-                  LCD_COLOUR_SLIDERS_VALUE);
-
-    //Draw central point line on the mix slider
-    if (i == LCD_SLIDER_MIX_INDEX)
-    {
-      uint8_t lineThickness = 4;
-      uint8_t lineUnipolarExtraLength = 3; //by how much the line extends above/below the slider
-
-      lcd.fillRect (lcd.width() - ((LCD_HORZ_SLIDER_LENGTH / 2.0) + (lineThickness / 2.0)),
-                    sliderYPos - lineUnipolarExtraLength,
-                    lineThickness,
-                    LCD_SLIDER_WIDTH + lineUnipolarExtraLength,
-                    LCD_COLOUR_SLIDERS_BCKGND);
-
-    } //if ( i == LCD_SLIDER_MIX_INDEX)
-
-    //draw 'value' section of the slider
     lcd.fillRect ((lcd.width() - LCD_HORZ_SLIDER_LENGTH) + (lcdSliderValue[i] * midiToPixelVal),
                   sliderYPos,
                   LCD_HORZ_SLIDER_LENGTH - (lcdSliderValue[i] * midiToPixelVal),
                   LCD_SLIDER_WIDTH,
                   LCD_COLOUR_SLIDERS_BCKGND);
+
+    //Draw central point line on the mix slider
+    if (i == LCD_SLIDER_MIX_INDEX)
+    {
+      uint8_t lineThickness = 4;
+      uint8_t lineUnipolarExtraLength = 4; //by how much the line extends above/below the slider
+
+      lcd.fillRect (lcd.width() - ((LCD_HORZ_SLIDER_LENGTH / 2.0) + (lineThickness / 2.0)),
+                    sliderYPos - lineUnipolarExtraLength,
+                    lineThickness,
+                    LCD_SLIDER_WIDTH + (lineUnipolarExtraLength * 2),
+                    LCD_COLOUR_SLIDERS_BCKGND);
+
+    } //if ( i == LCD_SLIDER_MIX_INDEX)
+
+    //draw 'value' section of the slider
+    lcd.fillRect (lcd.width() - LCD_HORZ_SLIDER_LENGTH,
+                  sliderYPos,
+                  lcdSliderValue[i] * midiToPixelVal,
+                  LCD_SLIDER_WIDTH,
+                  LCD_COLOUR_SLIDERS_VALUE);
 
   } //for (uint8_t i = LCD_SLIDER_DICTATOR_INDEX; i < LCD_NUM_OF_SLIDERS; i++)
 
