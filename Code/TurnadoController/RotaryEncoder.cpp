@@ -47,7 +47,7 @@ void RotaryEncoder::update()
         env_val = env_val * b; //apply acceleration
       }
       
-    } //if (enableAcceleration)
+    } //if (accelerationEnabled)
 
     env_val /= 4;
     this->handle_encoder_change (*this, env_val);

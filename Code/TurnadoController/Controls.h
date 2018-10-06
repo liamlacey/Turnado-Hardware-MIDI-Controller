@@ -382,14 +382,25 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
       //if switch is being turned on
       if (enc.getSwitchState() > 0)
       {
-        //reset base value
-        knobControllerData[i].baseValue = 0;
+        //Reset base value.
+        //There is a 'bug' (or unexplained behaviour) with Turnado where if controlling the Turnado knob directly in software,
+        //and then sending a single CC message to change the knob value which is the same value as the last MIDI message sent,
+        //the value won't reset in Turnado. E.g. send a MIDI CC value of 0 with the device, turn the knob directly in Turnado
+        //to any value above 0, and then send a second MIDI CC value of 0 with the device, Turnado won't respond to the MIDI CC.
+        //Same as with the randomise button, it appears Turnado needs a MIDI-in state change to respond to MIDI,
+        //therefore the workaround for this is to send two CCs to reset the knob value - 1 followed by 0.
 
-        if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+        for (int8_t val = 1; val >= 0; val--)
         {
-          setKnobControllerCombinedMidiValue (i, true);
-          knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
-        }
+          knobControllerData[i].baseValue = val;
+
+          if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+          {
+            setKnobControllerCombinedMidiValue (i, true);
+            knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+          }
+
+        } //for (uint8_t val = 1; val >= 0; val--)
 
       } //if (enc.getSwitchState() > 0)
 
