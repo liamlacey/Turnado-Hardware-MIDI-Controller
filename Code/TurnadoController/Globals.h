@@ -7,6 +7,11 @@
 #define DICTATOR_KNOB_CONTROLLER_INDEX 8
 #define NUM_OF_ACTUAL_KNOB_CONTROLLERS 8
 
+//Device params = knob controllers, dictator controller, and mix control
+#define NUM_OF_DEVICE_PARAMS (NUM_OF_KNOB_CONTROLLERS + 1)
+#define DEVICE_PARAM_INDEX_DICTATOR 8
+#define DEVICE_PARAM_INDEX_MIX 9
+
 enum LcdEncoderNames
 {
   LCD_ENC_CTRL = 0,

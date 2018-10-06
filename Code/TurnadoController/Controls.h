@@ -20,6 +20,8 @@ SwitchControl* presetDownButton;
 SwitchControl* randomiseButton;
 
 //=========================================================================
+//FIXME: could knobControllerData and mixControllerData be arrays for each MIDI channel and replace deviceParamValuesForMidiChannel?
+
 struct KnobControllerData
 {
   int16_t baseValue = 0;
@@ -176,6 +178,35 @@ void setKnobControllerBaseValue (uint8_t index, uint8_t value, bool sendToMidiOu
 //=========================================================================
 //=========================================================================
 //=========================================================================
+void setMixControllerValue (uint8_t value, bool sendToMidiOut)
+{
+  mixControllerData.midiValue = value;
+
+  if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
+  {
+    if (sendToMidiOut)
+    {
+      //send MIDI message
+      byte channel = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      if (channel == 0)
+        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      byte control = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_CC_NUM].value;
+      byte value = mixControllerData.midiValue;
+      sendMidiCcMessage (channel, control, value, DEVICE_PARAM_INDEX_MIX);
+
+    } //if (sendToMidiOut)
+
+    //update LCD display
+    lcdSetSliderValue (LCD_SLIDER_MIX_INDEX, mixControllerData.midiValue);
+
+    mixControllerData.prevMidiValue = mixControllerData.midiValue;
+
+  } //if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
+}
+
+//=========================================================================
+//=========================================================================
+//=========================================================================
 void setCurrentMidiProgramNumber (int8_t incVal)
 {
   //Always send MIDI program change messages here,
@@ -192,6 +223,9 @@ void setCurrentMidiProgramNumber (int8_t incVal)
 
   //flag to update program in LCD top bar display
   lcdTopBarProgramChanged = true;
+
+  //Do I need to do anything to the param values? If program change resets turnado knobs
+  //we should received MIDI-in CCs for these changes, but what about for dictator and mix params?
 }
 
 //=========================================================================
@@ -209,6 +243,21 @@ void setGlobalMidiChannel (int8_t incVal)
 
     //flag to update channel in LCD top bar display
     lcdTopBarChannelChanged = true;
+
+    //update the knob controller base values (and LCD display) with values of new channel
+    //for the knob controllers that are set to use the global channel
+
+    for (uint8_t i = 0; i < NUM_OF_DEVICE_PARAMS; i++)
+    {
+      if (settingsData[i + 1].paramData[PARAM_INDEX_MIDI_CHAN].value == 0)
+      {
+        if (i < DEVICE_PARAM_INDEX_MIX)
+          setKnobControllerBaseValue (i, deviceParamValuesForMidiChannel[newChan - 1][i], false);
+        else
+          setMixControllerValue (deviceParamValuesForMidiChannel[newChan - 1][i], false);
+      }
+
+    } //for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
 
   } //if (prevChan != newChan)
 }
@@ -310,24 +359,7 @@ void processEncoderChange (RotaryEncoder &enc, int enc_value)
     Serial.println (enc_value);
 #endif
 
-    mixControllerData.midiValue = constrain (mixControllerData.midiValue + enc_value, 0, 127);
-
-    if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
-    {
-      //send MIDI message
-      byte channel = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_MIDI_CHAN].value;
-      if (channel == 0)
-        channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
-      byte control = settingsData[SETTINGS_MIX].paramData[PARAM_INDEX_CC_NUM].value;
-      byte value = mixControllerData.midiValue;
-      sendMidiCcMessage (channel, control, value, -1);
-
-      //update LCD display
-      lcdSetSliderValue (LCD_SLIDER_MIX_INDEX, mixControllerData.midiValue);
-
-      mixControllerData.prevMidiValue = mixControllerData.midiValue;
-
-    } //if (mixControllerData.midiValue != mixControllerData.prevMidiValue)
+    setMixControllerValue (constrain (mixControllerData.midiValue + enc_value, 0, 127), true);
 
   } //if (enc == *mixEncoder)
 

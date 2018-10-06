@@ -32,9 +32,9 @@ const uint8_t LCD_VERT_SLIDER_SPACING = 43;
 const uint8_t LCD_DICT_SLIDER_Y_POS = 65;
 const uint8_t LCD_MIX_SLIDER_Y_POS = 35;
 
-const uint8_t LCD_NUM_OF_SLIDERS = 10;
-const uint8_t LCD_SLIDER_DICTATOR_INDEX = 8;
-const uint8_t LCD_SLIDER_MIX_INDEX = 9;
+const uint8_t LCD_NUM_OF_SLIDERS = NUM_OF_DEVICE_PARAMS;
+const uint8_t LCD_SLIDER_DICTATOR_INDEX = DEVICE_PARAM_INDEX_DICTATOR;
+const uint8_t LCD_SLIDER_MIX_INDEX = DEVICE_PARAM_INDEX_MIX;
 
 //below arrays store values as midi / 7-bit values.
 uint8_t lcdSliderValue[LCD_NUM_OF_SLIDERS] = {0};
@@ -172,7 +172,7 @@ void updateLcd()
                       100,
                       LCD_TEXT_LINE_SPACING - LCD_TOP_BAR_TEXT_Y_POS,
                       LCD_COLOUR_TEXT);
-                      
+
         lcd.setTextColor (LCD_COLOUR_BCKGND);
 
         lcd.setCursor (LCD_TOP_BAR_TEXT_CHAN_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
@@ -180,7 +180,7 @@ void updateLcd()
         lcd.print (settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value);
 
         lcdTopBarChannelChanged = false;
-        
+
       } //if (lcdTopBarChannelChanged)
 
       if (lcdTopBarProgramChanged)
@@ -190,7 +190,7 @@ void updateLcd()
                       100,
                       LCD_TEXT_LINE_SPACING - LCD_TOP_BAR_TEXT_Y_POS,
                       LCD_COLOUR_TEXT);
-                      
+
         lcd.setTextColor (LCD_COLOUR_BCKGND);
 
         lcd.setCursor (LCD_TOP_BAR_TEXT_PRGM_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
@@ -198,9 +198,9 @@ void updateLcd()
         lcd.print (currentMidiProgramNumber);
 
         lcdTopBarProgramChanged = false;
-        
+
       } //if (lcdTopBarProgramChanged)
-      
+
       //=========================================================================
 
     } //if (lcdDisplayMode == LCD_DISPLAY_MODE_CONTROLS)
@@ -567,7 +567,30 @@ void lcdSetSelectedParamValue (int8_t incVal)
 
       //flag that the new value needs saving to EEPROM
       settingsData[lcdCurrentlySelectedMenu].paramData[lcdCurrentSelectedMenuParam].needsSavingToEeprom = true;
-    }
+
+      //if changing any of the MIDI channel settings
+      if (lcdCurrentSelectedMenuParam == PARAM_INDEX_MIDI_CHAN)
+      {
+        //for each device param
+        for (uint8_t i = 0; i < NUM_OF_DEVICE_PARAMS; i++)
+        {
+          //if changing the global MIDI channel and this param uses the global MIDI channel,
+          //or changing the MIDI channel for this param
+          if ((lcdCurrentlySelectedMenu == SETTINGS_GLOBAL && settingsData[i + 1].paramData[PARAM_INDEX_MIDI_CHAN].value == 0) ||
+              lcdCurrentlySelectedMenu == i + 1)
+          {
+            //set the device param value to be the stored one
+            if (i < DEVICE_PARAM_INDEX_MIX)
+              setKnobControllerBaseValue (i, deviceParamValuesForMidiChannel[newVal - 1][i], false);
+            else
+              setMixControllerValue (deviceParamValuesForMidiChannel[newVal - 1][i], false);
+          }
+
+        } //for (uint8_t i = 0; i < NUM_OF_ACTUAL_KNOB_CONTROLLERS; i++)
+
+      } //if (lcdCurrentSelectedMenuParam == PARAM_INDEX_MIDI_CHAN)
+
+    } //if (newVal != currentVal)
 
   } //if (lcdDisplayMode = LCD_DISPLAY_MODE_SETTINGS_MENU || lcdAutoSwitchToMenuDisplay)
 }
