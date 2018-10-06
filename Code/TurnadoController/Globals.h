@@ -26,6 +26,7 @@ enum LcdDisplayModes
    _TODO:_
    Test all untested code / features
    Comment / document code
+   See other TODO's and FIXME's in code
    
    _Future version feature and changes ideas:_
    - Allow internal presets of settings that can be changed with a button combination (LCD ctrl switch + preset buttons?). Display preset number in controls display top bar.

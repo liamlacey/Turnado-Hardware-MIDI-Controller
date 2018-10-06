@@ -66,6 +66,12 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
         //set knob controller value (base value only)
         setKnobControllerBaseValue (control - 1, value, false);
       }
+      else
+      {
+        //TODO: Store the MIDI-in CC value for this channel, so that when changing
+        //the the channel of a knob controller (either directly or through changing global channel)
+        //the base value (and LCD display) for the knob controller is updated with the stored value.
+      }
 
     } //if (millis() - prevKnobControllerMidiSendTime[control - 1] > MIDI_CC_LOOPBACK_TIMEOUT)
 
