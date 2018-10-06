@@ -40,6 +40,13 @@ const uint8_t LCD_SLIDER_MIX_INDEX = 9;
 uint8_t lcdSliderValue[LCD_NUM_OF_SLIDERS] = {0};
 uint8_t lcdPrevSliderValue[LCD_NUM_OF_SLIDERS] = {0};
 
+const uint8_t LCD_TOP_BAR_TEXT_CHAN_X_POS = 1;
+const uint8_t LCD_TOP_BAR_TEXT_PRGM_X_POS = 235;
+const uint8_t LCD_TOP_BAR_TEXT_Y_POS = 1;
+
+bool lcdTopBarChannelChanged = false;
+bool lcdTopBarProgramChanged = false;
+
 //=========================================================================
 //menu display stuff...
 
@@ -148,16 +155,53 @@ void updateLcd()
 
           } //else (horizontal slider)
 
-          //=========================================================================
-          //TODO: update text in top bar if changed
-
-          //=========================================================================
-
           lcdPrevSliderValue[i] = lcdSliderValue[i];
 
         } //if (lcdSliderValue[i] != lcdPrevSliderValue[i])
 
       } //for (uint8_t i = 0; i < LCD_NUM_OF_SLIDERS; i++)
+
+      //=========================================================================
+      //update text in top bar if changed
+      //FIXME: don't need to be updating label text - just values
+
+      if (lcdTopBarChannelChanged)
+      {
+        lcd.fillRect (LCD_TOP_BAR_TEXT_CHAN_X_POS,
+                      LCD_TOP_BAR_TEXT_Y_POS,
+                      100,
+                      LCD_TEXT_LINE_SPACING - LCD_TOP_BAR_TEXT_Y_POS,
+                      LCD_COLOUR_TEXT);
+                      
+        lcd.setTextColor (LCD_COLOUR_BCKGND);
+
+        lcd.setCursor (LCD_TOP_BAR_TEXT_CHAN_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
+        lcd.print ("Chan:");
+        lcd.print (settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value);
+
+        lcdTopBarChannelChanged = false;
+        
+      } //if (lcdTopBarChannelChanged)
+
+      if (lcdTopBarProgramChanged)
+      {
+        lcd.fillRect (LCD_TOP_BAR_TEXT_PRGM_X_POS,
+                      LCD_TOP_BAR_TEXT_Y_POS,
+                      100,
+                      LCD_TEXT_LINE_SPACING - LCD_TOP_BAR_TEXT_Y_POS,
+                      LCD_COLOUR_TEXT);
+                      
+        lcd.setTextColor (LCD_COLOUR_BCKGND);
+
+        lcd.setCursor (LCD_TOP_BAR_TEXT_PRGM_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
+        lcd.print ("Prgm:");
+        lcd.print (currentMidiProgramNumber);
+
+        lcdTopBarProgramChanged = false;
+        
+      } //if (lcdTopBarProgramChanged)
+      
+      //=========================================================================
 
     } //if (lcdDisplayMode == LCD_DISPLAY_MODE_CONTROLS)
 
@@ -278,13 +322,15 @@ void lcdDisplayControls()
 
   lcd.setTextColor (LCD_COLOUR_BCKGND);
 
-  lcd.setCursor (0, 0);
+  lcd.setCursor (LCD_TOP_BAR_TEXT_CHAN_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
   lcd.print ("Chan:");
   lcd.print (settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value);
+  lcdTopBarChannelChanged = false;
 
-  lcd.setCursor (lcd.width() - 85, 0);
+  lcd.setCursor (LCD_TOP_BAR_TEXT_PRGM_X_POS, LCD_TOP_BAR_TEXT_Y_POS);
   lcd.print ("Prgm:");
   lcd.print (currentMidiProgramNumber);
+  lcdTopBarProgramChanged = false;
 }
 
 //=========================================================================

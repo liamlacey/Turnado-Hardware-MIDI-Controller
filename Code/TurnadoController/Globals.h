@@ -1,6 +1,6 @@
 //=========================================================================
 //DEV STUFF...
-#define DEBUG 1
+//#define DEBUG 1
 
 //=========================================================================
 #define NUM_OF_KNOB_CONTROLLERS 9 //Includes dictator mode controller
@@ -26,7 +26,6 @@ enum LcdDisplayModes
    _TODO:_
    Test all untested code / features
    Comment / document code
-   Update settings on top bar of controls display in realtime
    
    _Future version feature and changes ideas:_
    - Allow internal presets of settings that can be changed with a button combination (LCD ctrl switch + preset buttons?). Display preset number in controls display top bar.

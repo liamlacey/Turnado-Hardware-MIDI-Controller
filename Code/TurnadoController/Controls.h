@@ -190,7 +190,8 @@ void setCurrentMidiProgramNumber (int8_t incVal)
     channel = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
   sendMidiProgramChangeMessage (channel, currentMidiProgramNumber);
 
-  //TODO: update LCD display (so top bar shows current MIDI program number)
+  //flag to update program in LCD top bar display
+  lcdTopBarProgramChanged = true;
 }
 
 //=========================================================================
@@ -206,7 +207,8 @@ void setGlobalMidiChannel (int8_t incVal)
     settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value = newChan;
     settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].needsSavingToEeprom = true;
 
-    //TODO: update LCD display (so top bar shows current MIDI program number)
+    //flag to update channel in LCD top bar display
+    lcdTopBarChannelChanged = true;
 
   } //if (prevChan != newChan)
 }
