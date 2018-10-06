@@ -56,8 +56,16 @@ void ProcessMidiControlChange (byte channel, byte control, byte value)
       Serial.println (value);
 #endif
 
-      //set knob controller base value only
-      setKnobControllerBaseValue (control - 1, value, false);
+      byte knobControllerChan = settingsData[control].paramData[PARAM_INDEX_MIDI_CHAN].value;
+      if (knobControllerChan == 0)
+        knobControllerChan = settingsData[SETTINGS_GLOBAL].paramData[PARAM_INDEX_MIDI_CHAN].value;
+
+      //if the CC channel matches that of the knob controller channel
+      if (channel == knobControllerChan)
+      {
+        //set knob controller value (base value only)
+        setKnobControllerBaseValue (control - 1, value, false);
+      }
 
     } //if (millis() - prevKnobControllerMidiSendTime[control - 1] > MIDI_CC_LOOPBACK_TIMEOUT)
 
