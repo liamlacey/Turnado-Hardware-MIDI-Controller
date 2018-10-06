@@ -31,6 +31,7 @@ struct KnobControllerData
 };
 
 KnobControllerData knobControllerData[NUM_OF_KNOB_CONTROLLERS];
+bool ignoreJsMessage[NUM_OF_KNOB_CONTROLLERS] = {false};
 
 struct MixControllerData
 {
@@ -382,25 +383,55 @@ void processEncoderSwitchChange (RotaryEncoder &enc)
       //if switch is being turned on
       if (enc.getSwitchState() > 0)
       {
-        //Reset base value.
-        //There is a 'bug' (or unexplained behaviour) with Turnado where if controlling the Turnado knob directly in software,
-        //and then sending a single CC message to change the knob value which is the same value as the last MIDI message sent,
-        //the value won't reset in Turnado. E.g. send a MIDI CC value of 0 with the device, turn the knob directly in Turnado
-        //to any value above 0, and then send a second MIDI CC value of 0 with the device, Turnado won't respond to the MIDI CC.
-        //Same as with the randomise button, it appears Turnado needs a MIDI-in state change to respond to MIDI,
-        //therefore the workaround for this is to send two CCs to reset the knob value - 1 followed by 0.
-
-        for (int8_t val = 1; val >= 0; val--)
+        //if knob controller joystick is currently centred
+        if (knobControllerData[i].relativeValue == 0)
         {
-          knobControllerData[i].baseValue = val;
+          //Use switch to reset base value...
 
-          if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+          //There is a 'bug' (or unexplained behaviour) with Turnado where if controlling the Turnado knob directly in software,
+          //and then sending a single CC message to change the knob value which is the same value as the last MIDI message sent,
+          //the value won't reset in Turnado. E.g. send a MIDI CC value of 0 with the device, turn the knob directly in Turnado
+          //to any value above 0, and then send a second MIDI CC value of 0 with the device, Turnado won't respond to the MIDI CC.
+          //Same as with the randomise button, it appears Turnado needs a MIDI-in state change to respond to MIDI,
+          //therefore the workaround for this is to send two CCs to reset the knob value - 1 followed by 0.
+
+          for (int8_t val = 1; val >= 0; val--)
           {
-            setKnobControllerCombinedMidiValue (i, true);
-            knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
-          }
+            knobControllerData[i].baseValue = val;
 
-        } //for (uint8_t val = 1; val >= 0; val--)
+            if (knobControllerData[i].baseValue != knobControllerData[i].prevBaseValue)
+            {
+              setKnobControllerCombinedMidiValue (i, true);
+              knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+            }
+
+          } //for (uint8_t val = 1; val >= 0; val--)
+
+        } // if (knobControllerData[i].relativeValue)
+
+        //if knob controller joystick is being used
+        else
+        {
+          //Use switch to set the current combined value as the base value...
+          //(would be better if this behaviour could instead be triggered by the JS switches,
+          //however these aren't wired on the current prototype).
+
+          //set the base values
+          knobControllerData[i].baseValue = knobControllerData[i].combinedMidiValue;
+          knobControllerData[i].prevBaseValue = knobControllerData[i].baseValue;
+
+          //reset relative values
+          knobControllerData[i].relativeValue = 0;
+          knobControllerData[i].prevRelativeValue = knobControllerData[i].relativeValue;
+
+          //Don't need to set combined MIDI value as this isn't changing (and therefore
+          //don't need to send a new MIDI message or update the LCD)
+
+          //flag to ignore knob controller joystick until it is centred again
+          //(otherwise the relative value will jump with the next joystick movement)
+          ignoreJsMessage[i] = true;
+
+        } //else (relativeValue[i] != 0)
 
       } //if (enc.getSwitchState() > 0)
 
@@ -514,12 +545,22 @@ void processJoystickChange (ThumbJoystick &thumbJoystick, bool isYAxis)
         Serial.println (thumbJoystick.getYAxisValue());
 #endif
 
-        knobControllerData[i].relativeValue = thumbJoystick.getYAxisValue();
-
-        if (knobControllerData[i].relativeValue != knobControllerData[i].prevRelativeValue)
+        if (!ignoreJsMessage[i])
         {
-          setKnobControllerCombinedMidiValue (i, true);
-          knobControllerData[i].prevRelativeValue = knobControllerData[i].relativeValue;
+          knobControllerData[i].relativeValue = thumbJoystick.getYAxisValue();
+
+          if (knobControllerData[i].relativeValue != knobControllerData[i].prevRelativeValue)
+          {
+            setKnobControllerCombinedMidiValue (i, true);
+            knobControllerData[i].prevRelativeValue = knobControllerData[i].relativeValue;
+          }
+        } //if (!ignoreJsMessage[i])
+
+        else
+        {
+          //if the ignored joystick has been centred, no longer ignore it.
+          if (thumbJoystick.getYAxisValue() == 0)
+            ignoreJsMessage[i] = false;
         }
 
       } //if (thumbJoystick == *knobControllersJoysticks[i])
