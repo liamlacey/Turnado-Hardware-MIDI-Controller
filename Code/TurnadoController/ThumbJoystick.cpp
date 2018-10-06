@@ -21,18 +21,24 @@ void ThumbJoystick::update()
     value = 512;
   }
 
-  //if we've got a new Y-axis raw value within a range of +/-hysteresis_val, or a new centre value
+  //if we've got a new Y-axis raw value within a range of +/-hysteresis_val, or a new centre or end value
   if ((value - JS_Y_HYSTERESIS_VAL > yAxisRawValue) ||
       (value + JS_Y_HYSTERESIS_VAL < yAxisRawValue) ||
-      (value == 512 && yAxisRawValue != 512))
+      (value == 512 && yAxisRawValue != 512) ||
+      (value == yAxisMinValue && yAxisRawValue != yAxisMinValue) ||
+      (value == yAxisMaxValue && yAxisRawValue != yAxisMaxValue))
   {
     yAxisRawValue = value;
 
+    //Serial.print(yAxisPin);
+    //Serial.print(": ");
+    //Serial.println(yAxisRawValue);
+
     //map and contrain raw value to user value of +/-127 with plateau values at each end
     if (value > 512)
-      value = map (value, 512 + (JS_CENTRE_PLATEAU_VAL / 2), 1023 - JS_EDGE_PLATEAU_VAL, 0, 127);
+      value = map (value, 512 + (JS_CENTRE_PLATEAU_VAL / 2), yAxisMaxValue - JS_EDGE_PLATEAU_VAL, 0, 127);
     else if (value < 512)
-      value = map (value, JS_EDGE_PLATEAU_VAL, 512 - (JS_CENTRE_PLATEAU_VAL / 2), -128, 0);
+      value = map (value, yAxisMinValue + JS_EDGE_PLATEAU_VAL, 512 - (JS_CENTRE_PLATEAU_VAL / 2), -128, 0);
     else
       value = 0;
 
