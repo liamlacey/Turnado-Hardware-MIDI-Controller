@@ -4,7 +4,9 @@
 
 //=========================================================================
 
-const uint8_t MIDI_CC_LOOPBACK_TIMEOUT = 50;
+//FIXME: make the below a global setting
+const uint16_t MIDI_CC_LOOPBACK_TIMEOUT = 250;
+
 long prevKnobControllerMidiSendTime[NUM_OF_KNOB_CONTROLLERS] = {0};
 
 //=========================================================================
