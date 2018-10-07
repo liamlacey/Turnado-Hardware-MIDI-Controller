@@ -1,7 +1,10 @@
 #include "Globals.h"
 
 //=========================================================================
+//FIXME: make the below an array for each MIDI channel, where the index is set by the current MIDI channel of the program change buttons.
+//This will involve needing to update the program display on the LCD top bar every time the program change buttons MIDI channel is changed.
 int16_t currentMidiProgramNumber = 0;
+
 //FIXME: could the below be replaced by knobControllerData and mixControllerData as arrays for each MIDI channel?
 uint8_t deviceParamValuesForMidiChannel[16][NUM_OF_DEVICE_PARAMS] = {{0}};
 
