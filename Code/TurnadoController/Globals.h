@@ -29,11 +29,12 @@ enum LcdDisplayModes
 
 /*
    _TODO:_
-   Test all untested code / features
    Comment / document code
    See other TODO's and FIXME's in code
    
    _Future version feature and changes ideas:_
+   - Allow dictator encoder switch to 'stick' any current used knob joysticks if being used
+   - Implement knob and dictator control time quantisation, where the activating and deactivating of controls is quantised to a set MIDI time / clock ticks value (configurable globally and per control). This will involve the controller repsonding to MIDI clock messages and MIDI start messages. 
    - Allow internal presets of settings that can be changed with a button combination (LCD ctrl switch + preset buttons?). Display preset number in controls display top bar.
    - Improve knob controller (and dictator) sliders on LCS to show the difference between the base value and relative value. E.g Base value shown with a bar, relative value shown as slider value starting at bar position.
    - Implement global setting for auto switching LCD display with control messages
