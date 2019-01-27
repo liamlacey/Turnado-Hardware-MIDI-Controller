@@ -75,6 +75,9 @@ class RotaryEncoder
     //=====================================================
   private:
 
+    bool shouldSendEncoderValue (int incVal);
+    bool doesValDirMatchPrevVals (int incVal);
+
     void (*handle_encoder_change)(RotaryEncoder &enc, int enc_value) = NULL;
     void (*handle_switch_change)(RotaryEncoder &enc) = NULL;
 
@@ -94,6 +97,10 @@ class RotaryEncoder
     int b = 0;
 
     bool accelerationEnabled = true;
+
+    #define NUM_OF_PREV_VALS 5
+    int8_t prevIncDirs[NUM_OF_PREV_VALS] = {1, 1, 1, 1, 1}; //1 = positive/clockwise, -1 = negative/anti-clockwise
+    unsigned long prevIncTime = 0;
 
     bool switchEnabled = true;
     const int DEBOUNCE_TIME = 10;
